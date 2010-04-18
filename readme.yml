@@ -1,14 +1,27 @@
-dependencies:
+Dependencies:
     - Python 2.6
-recommended:
+    - Setuptools for users
+
+Recommended for developers:
+    - bzr
     - pip
     - virtualenv
     - virtualenvwrapper
 
-installation: |
+Installation for users: |
     wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' -O data/jbovlaste.xml
-    pip install -r requirements.txt
-    ./vlasisku -dr
+    sudo easy_install $(cat requirements.txt)
+    ./vlasisku
 
-thanks:
+Installation for developers: |
+    bzr branch lp:vlasisku; cd vlasisku # If you got this file some other way
+    wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' -O data/jbovlaste.xml
+    mkvirtualenv --no-site-packages vlasisku # Isolated Python environment
+    pip install -r requirements.txt # Installs to that environment
+    ./vlasisku -dr
+    deactivate # When finished
+    workon vlasisku # To reactivate the environment
+
+Thanks:
     - Twey, for compiling the grammatical class usage scales.
+
