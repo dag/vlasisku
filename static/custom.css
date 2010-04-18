@@ -1,0 +1,87 @@
+.container {
+    font-size: 150%;
+    margin-top: 2em;
+}
+
+#nav ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+#nav li {
+    padding-right: 1em;
+    display: inline;
+    font-weight: bold;
+}
+
+#search {
+    text-align: right;
+}
+#search input, button {
+    font-size: 16px;
+}
+
+#matches {
+    text-align: right;
+}
+#matches ol {
+    list-style-type: none;
+    margin-right: 0;
+}
+#matches li {
+    margin-left: 1em;
+    display: inline;
+}
+
+#classes p {
+    text-align: justify;
+    word-spacing: 0.6em;
+}
+#classes a {
+    text-decoration: none;
+    vertical-align: middle;
+    line-height: 0.8;
+}
+
+#entry .affixes {
+    font-size: smaller;
+}
+#entry .affixes .hyphen {
+    color: #bbb;
+}
+#entry .type {
+    float: right;
+    font-size: smaller;
+}
+#entry .definition {
+    font-size: 120%;
+}
+#entry .notes {
+    font-style: italic;
+}
+#entry .links {
+    text-align: right;
+    margin-right: 0;
+}
+#entry .links ul {
+    list-style-type: none;
+}
+#entry .links li {
+    display: inline;
+    margin-left: 1em;
+}
+
+hr {
+    height: 1px;
+}
+
+h2 {
+    font-size: 140%;
+}
+
+a[href^="http:"], a[href^="https:"] {
+  padding:2px 22px 2px 0;
+  margin:-2px 0;
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-image: url(blueprint/plugins/link-icons/icons/external.png);
+}
