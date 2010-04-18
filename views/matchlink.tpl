@@ -1,3 +1,8 @@
+% try:
+    % field = field
+% except NameError:
+    % field = id
+% end
 % if len(matches) == 1:
     <li><a href="#{{id}}">one matched {{field}}</a></li>
 % elif matches:

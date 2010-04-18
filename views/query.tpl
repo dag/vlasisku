@@ -2,12 +2,12 @@
 
 <div id="matches">
 <ol>
-% include matchlink matches=glosses, id='gloss', field='gloss'
-% include matchlink matches=affix, id='affix', field='affix'
+% include matchlink matches=glosses, id='gloss'
+% include matchlink matches=affix, id='affix'
 % include matchlink matches=classes, id='class', field='grammatical class'
-% include matchlink matches=types, id='type', field='type'
-% include matchlink matches=definitions, id='definition', field='definition'
-% include matchlink matches=notes, id='notes', field='notes'
+% include matchlink matches=types, id='type'
+% include matchlink matches=definitions, id='definition'
+% include matchlink matches=notes, id='notes'
 </ol>
 </div>
 
@@ -52,7 +52,7 @@
 <dl>
 % for gloss in glosses:
     <dt>
-        <a href="/{{gloss.entry.word}}">{{gloss.entry.word}}</a>
+        <a href="/{{gloss.entry}}">{{gloss.entry}}</a>
     % if gloss.sense:
         in sense "{{gloss.sense}}"
     %end

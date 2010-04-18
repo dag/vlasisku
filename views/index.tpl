@@ -1,4 +1,4 @@
-% rebase layout query=None
+% rebase layout
 
 <div id="types" class="span-6">
 <h2>Types</h2>

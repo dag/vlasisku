@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-% if query:
+% try:
 <title>{{query}} - vlasisku</title>
-% else:
+% except NameError:
 <title>vlasisku</title>
 % end
 <link rel="shortcut icon" href="/static/favicon-16.png">
@@ -35,9 +35,9 @@
 <div class="span-18 last">
 <form action="" onsubmit="return search();" id="search" class="inline">
     <p>
-    % if query:
+    % try:
         <input type="text" value="{{query}}" size="30" id="query" accesskey="f" onfocus="this.select()">
-    % else:
+    % except NameError:
         <input type="text" size="30" id="query" accesskey="f" onfocus="this.select()">
     % end
         <button type="submit"><img src="/static/favicon-16.png" alt=""> Find!</button>
