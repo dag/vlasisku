@@ -17,9 +17,9 @@ def tex2html(tex):
             x = x.replace('{', '').replace('}', '')
             x = x.replace('*', u'×'.encode('utf-8'))
             if '_' in x:
-                t.append('{0}<sub>{1}</sub>'.format(*x.split('_')))
+                t.append('%s<sub>%s</sub>' % tuple(x.split('_')[0:2]))
             elif '^' in x:
-                t.append('{0}<sup>{1}</sup>'.format(*x.split('^')))
+                t.append('%s<sup>%s</sup>' % tuple(x.split('^')[0:2]))
             else:
                 t.append(x)
         return '='.join(t)
@@ -32,7 +32,7 @@ def braces2links(text):
     'See also <a href="/mupli">mupli</a>, <a href="/mu\\'u">mu\\'u</a>.'
     """
     def f(m):
-        return '<a href="/{0}">{0}</a>'.format(m.group(1))
+        return '<a href="/%s">%s</a>' % (m.group(1), m.group(1))
     return re.sub(r'\{(.+?)\}', f, text)
 
 

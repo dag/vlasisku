@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+from __future__ import with_statement
+
 from bottle import route, view, response, request, abort, send_file, redirect
 from utils import etag
 import db
 from os.path import join, dirname
 from utils import ignore
-from json import dumps
+from simplejson import dumps
 import re
 
 
@@ -50,10 +52,10 @@ def suggest(prefix):
                        if g.gloss.startswith(prefix))
     for x in xrange(5):
         with ignore(StopIteration):
-            suggestions.append(next(entries))
+            suggestions.append(entries.next())
             types.append(db.entries[suggestions[-1]].type)
         with ignore(StopIteration):
-            suggestions.append(next(glosses))
+            suggestions.append(glosses.next())
             types.append('gloss')
     return dumps([prefix, suggestions, types])
 
@@ -100,8 +102,8 @@ def query(query):
                if e.type == query]
     matches.update(types)
     
-    regexquery = r'\b({0}|{1})\b'.format(re.escape(query),
-                                         re.escape(query.capitalize()))
+    regexquery = r'\b(%s|%s)\b' % (re.escape(query),
+                                   re.escape(query.capitalize()))
     
     definitions = [e for e in db.entries.itervalues()
                      if e not in matches
@@ -115,7 +117,7 @@ def query(query):
     matches.update(notes)
     
     if not entry and len(matches) == 1:
-        redirect('/{0}'.format(matches.pop()))
+        redirect('/%s' % matches.pop())
         return
     
     del matches

@@ -1,5 +1,7 @@
 #-*- coding:utf-8 -*-
 
+from __future__ import with_statement
+
 from ordereddict import OrderedDict
 from os.path import join, dirname
 import yaml
@@ -72,9 +74,9 @@ for type in types:
                             entry.terminates.append(grammarclass)
                     if text in cll:
                         for path in cll[text]:
-                            section = '{0}.{1}'.format(*path)
-                            link = 'http://dag.github.com/cll/{0}/{1}/'
-                            entry.cll.append((section, link.format(*path)))
+                            section = '%s.%s' % tuple(path)
+                            link = 'http://dag.github.com/cll/%s/%s/'
+                            entry.cll.append((section, link % tuple(path)))
                 elif child.tag == 'definition':
                     entry.definition = tex2html(text)
                 elif child.tag == 'notes':
