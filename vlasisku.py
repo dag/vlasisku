@@ -44,6 +44,8 @@ def opensearch():
 
 @route('/suggest/:prefix')
 def suggest(prefix):
+    response.content_type = 'application/json'
+    prefix = prefix.replace('+', ' ')
     suggestions = []
     types = []
     entries = (e for e in db.entries.iterkeys()
