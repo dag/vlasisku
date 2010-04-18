@@ -78,6 +78,7 @@ def json(entry):
 @view('query')
 @etag(db.etag)
 def query(query):
+    query = query.replace('+', ' ')
     matches = set()
     
     entry = db.entries.get(query, None)
