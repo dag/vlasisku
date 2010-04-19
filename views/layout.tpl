@@ -33,23 +33,17 @@
 </div>
 
 <div class="span-18 last">
-<form action="" onsubmit="return search();" id="search" class="inline">
+<form action="/" method="get" onsubmit="return search();" id="search" class="inline">
     <p>
     % try:
-        <input type="text" value="{{query}}" size="30" id="query" accesskey="f" onfocus="this.select()">
+        <input type="text" value="{{query}}" size="30" id="query" name="query" accesskey="f" onfocus="this.select()">
     % except NameError:
-        <input type="text" size="30" id="query" accesskey="f" onfocus="this.select()">
+        <input type="text" size="30" id="query" name="query" accesskey="f" onfocus="this.select()">
     % end
         <button type="submit"><img src="/static/favicon-16.png" alt=""> Find!</button>
     </p>
 </form>
 </div>
-
-<script type="text/javascript">
-<!--
-    document.getElementById('query').focus();
-//-->
-</script>
 
 <div class="clear"></div>
 % include

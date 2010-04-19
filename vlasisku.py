@@ -3,7 +3,7 @@
 
 from __future__ import with_statement
 
-from bottle import route, view, response, request, abort, send_file, redirect
+from bottle import route, view, request, redirect, response, abort, send_file
 from utils import etag
 import db
 from os.path import join, dirname
@@ -16,6 +16,9 @@ import re
 @view('index')
 @etag(db.etag)
 def index():
+    if 'query' in request.GET:
+        redirect(request.GET['query'])
+        return
     types = (('gismu', 'Root words.'),
              ('cmavo', 'Particles.'),
              ('cmavo cluster', 'Particle combinations.'),
