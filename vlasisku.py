@@ -39,11 +39,14 @@ def static(filename):
     send_file(filename, root=join(dirname(__file__), 'static'))
 
 
-@route('/opensearch')
+@route('/opensearch/')
 @view('opensearch')
 def opensearch():
     response.content_type = 'application/xml'
-    return dict(hostname=request.environ['HTTP_HOST'])
+    hostname = request.environ['HTTP_HOST']
+    path = request.environ.get('REQUEST_URI', '/opensearch/')
+    path = path.rpartition('opensearch/')[0]
+    return locals()
 
 @route('/suggest/:prefix')
 def suggest(prefix):
@@ -123,7 +126,7 @@ def query(query):
     matches.update(notes)
     
     if not entry and len(matches) == 1:
-        redirect('/%s' % matches.pop())
+        redirect(matches.pop())
         return
     
     del matches

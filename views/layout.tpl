@@ -7,12 +7,12 @@
 % except NameError:
 <title>vlasisku</title>
 % end
-<link rel="shortcut icon" href="/static/favicon-16.png">
-<link rel="stylesheet" href="/static/blueprint/screen.css" type="text/css" media="screen, projection">
-<link rel="stylesheet" href="/static/blueprint/print.css" type="text/css" media="print">
-<!--[if lt IE 8]><link rel="stylesheet" href="/static/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-<link rel="stylesheet" href="/static/custom.css" type="text/css" media="screen, projection, print">
-<link rel="search" type="application/opensearchdescription+xml" href="/opensearch" title="Lojban dictionary">
+<link rel="shortcut icon" href="static/favicon-16.png">
+<link rel="stylesheet" href="static/blueprint/screen.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="static/blueprint/print.css" type="text/css" media="print">
+<!--[if lt IE 8]><link rel="stylesheet" href="static/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+<link rel="stylesheet" href="static/custom.css" type="text/css" media="screen, projection, print">
+<link rel="search" type="application/opensearchdescription+xml" href="opensearch/" title="Lojban dictionary">
 <script type="text/javascript">
 <!--
     function search() {
@@ -27,7 +27,7 @@
 
 <div id="nav" class="span-6">
 <ol>
-    <li><a href="/" rel="index" accesskey="h">Home</a></li>
+    <li><a href="./" rel="index" accesskey="h">Home</a></li>
     <li><a href="https://bugs.launchpad.net/vlasisku/+filebug" title="Found a bug? Report it!" accesskey="b">Bugs</a></li>
 </ol>
 </div>

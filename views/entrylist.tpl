@@ -3,7 +3,7 @@
 <h2>{{title}}</h2>
 <dl>
 % for entry in entries:
-    <dt><a href="/{{entry}}">{{entry}}</a></dt>
+    <dt><a href="{{entry}}">{{entry}}</a></dt>
     <dd>{{entry.definition}}</dd>
 % end
 </dl>

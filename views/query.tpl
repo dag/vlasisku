@@ -18,11 +18,11 @@
 % if entry.grammarclass:
     <sub>
     % for grammarclass in entry.terminates:
-        <a href="/{{grammarclass}}">{{grammarclass}}</a>…
+        <a href="{{grammarclass}}">{{grammarclass}}</a>…
     % end
-        <a href="/{{entry.grammarclass}}">{{entry.grammarclass}}</a>
+        <a href="{{entry.grammarclass}}">{{entry.grammarclass}}</a>
     % if entry.terminator:
-        …<a href="/{{entry.terminator}}">{{entry.terminator}}</a>
+        …<a href="{{entry.terminator}}">{{entry.terminator}}</a>
     % end
     </sub>
 % end
@@ -52,7 +52,7 @@
 <dl>
 % for gloss in glosses:
     <dt>
-        <a href="/{{gloss.entry}}">{{gloss.entry}}</a>
+        <a href="{{gloss.entry}}">{{gloss.entry}}</a>
     % if gloss.sense:
         in sense "{{gloss.sense}}"
     %end

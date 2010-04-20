@@ -29,10 +29,10 @@ def braces2links(text):
     """Turns {quoted words} into HTML links.
     
     >>> braces2links("See also {mupli}, {mu'u}.")
-    'See also <a href="/mupli">mupli</a>, <a href="/mu\\'u">mu\\'u</a>.'
+    'See also <a href="mupli">mupli</a>, <a href="mu\\'u">mu\\'u</a>.'
     """
     def f(m):
-        return '<a href="/%s">%s</a>' % (m.group(1), m.group(1))
+        return '<a href="%s">%s</a>' % (m.group(1), m.group(1))
     return re.sub(r'\{(.+?)\}', f, text)
 
 
