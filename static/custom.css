@@ -58,6 +58,9 @@
 #entry .notes {
     font-style: italic;
 }
+.missing {
+    color: #900;
+}
 #entry .links {
     text-align: right;
     margin-right: 0;

@@ -36,7 +36,12 @@ def braces2links(text, entries):
             values = (m.group(1), entries[m.group(1)].definition, m.group(1))
             return '<a href="%s" title="%s">%s</a>' % values
         except KeyError:
-            return '<del>%s</del>' % m.group(1)
+            link = ['<a href="']
+            link.append('http://jbovlaste.lojban.org')
+            link.append('/dict/addvalsi.html?valsi=%s"')
+            link.append(' title="This word is missing, please add it!"')
+            link.append(' class="missing">%s</a>')
+            return ''.join(link) % (m.group(1), m.group(1))
     return re.sub(r'\{(.+?)\}', f, text)
 
 
