@@ -7,7 +7,7 @@ from os.path import join, dirname
 import yaml
 import xml.etree.cElementTree as ElementTree
 from utils import tex2html, braces2links
-from hashlib import sha1
+from os import stat
 
 
 entries = OrderedDict()
@@ -99,8 +99,5 @@ for word in jbovlaste.findall('//nlword'):
     glosses.append(gloss)
 
 
-with open(join(dirname(__file__), 'data', 'jbovlaste.xml')) as f:
-    etag = sha1()
-    etag.update(f.read())
-    etag = etag.hexdigest()
+etag = str(stat(join(dirname(__file__), 'data', 'jbovlaste.xml')).st_mtime)
 
