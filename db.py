@@ -80,9 +80,13 @@ for type in types:
                 elif child.tag == 'definition':
                     entry.definition = tex2html(text)
                 elif child.tag == 'notes':
-                    entry.notes = braces2links(tex2html(text))
+                    entry.notes = tex2html(text)
             
             entries[entry.word] = entry
+
+for entry in entries.itervalues():
+    if entry.notes:
+        entry.notes = braces2links(entry.notes, entries)
 
 for word in jbovlaste.findall('//nlword'):
     gloss = Gloss()

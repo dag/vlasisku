@@ -11,16 +11,12 @@
 <link rel="stylesheet" href="static/blueprint/screen.css" type="text/css" media="screen, projection">
 <link rel="stylesheet" href="static/blueprint/print.css" type="text/css" media="print">
 <!--[if lt IE 8]><link rel="stylesheet" href="static/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+<link rel="stylesheet" href="static/tipTip.css" type="text/css" media="screen, projection, print">
 <link rel="stylesheet" href="static/custom.css" type="text/css" media="screen, projection, print">
 <link rel="search" type="application/opensearchdescription+xml" href="opensearch/" title="Lojban dictionary">
-<script type="text/javascript">
-<!--
-    function search() {
-        window.location = encodeURIComponent(document.getElementById('query').value);
-        return false;
-    }
-//-->
-</script>
+<script type="text/javascript" src="static/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="static/jquery.tipTip.minified.js"></script>
+<script type="text/javascript" src="static/custom.js"></script>
 </head>
 <body>
 <div class="container">

@@ -25,14 +25,18 @@ def tex2html(tex):
         return '='.join(t)
     return re.sub(r'\$(.+?)\$', f, tex)
 
-def braces2links(text):
+def braces2links(text, entries):
     """Turns {quoted words} into HTML links.
     
     >>> braces2links("See also {mupli}, {mu'u}.")
     'See also <a href="mupli">mupli</a>, <a href="mu\\'u">mu\\'u</a>.'
     """
     def f(m):
-        return '<a href="%s">%s</a>' % (m.group(1), m.group(1))
+        try:
+            values = (m.group(1), entries[m.group(1)].definition, m.group(1))
+            return '<a href="%s" title="%s">%s</a>' % values
+        except KeyError:
+            return '<del>%s</del>' % m.group(1)
     return re.sub(r'\{(.+?)\}', f, text)
 
 

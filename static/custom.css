@@ -85,3 +85,8 @@ a[href^="http:"], a[href^="https:"] {
   background-position: right center;
   background-image: url(blueprint/plugins/link-icons/icons/external.png);
 }
+
+#tiptip_content {
+    font-size: 1.3em;
+}
+

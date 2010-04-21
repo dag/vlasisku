@@ -38,9 +38,9 @@
 % end
 <ul class="links">
 % for section, link in entry.cll:
-    <li><a href="{{link}}" title="Relevant section in the reference grammar">CLL {{section}}</a></li>
+    <li><a href="{{link}}" title="Relevant section in the reference grammar.">CLL {{section}}</a></li>
 % end
-    <li><a href="http://jbovlaste.lojban.org/dict/{{entry}}" title="This entry in the dictonary editor">jbovlaste</a></li>
+    <li><a href="http://jbovlaste.lojban.org/dict/{{entry}}" title="This entry in the dictonary editor.">jbovlaste</a></li>
 </ul>
 <hr>
 </div>

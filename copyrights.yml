@@ -1,7 +1,7 @@
 vlasisku:
     files:
         - data/*
-        - static/custom.css
+        - static/custom.*
         - views/*
         - "*.py"
     copyright: Copyright © 2010 Dag Odenhall <dag.odenhall@gmail.com>
