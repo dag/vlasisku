@@ -4,6 +4,6 @@ function search() {
 }
 
 jQuery(document).ready(function ($) {
-    $('a').tipTip({maxWidth: 'auto'});
+    $('a').tipTip({maxWidth: '600px'});
 });
 
