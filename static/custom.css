@@ -58,6 +58,9 @@
 #entry .notes {
     font-style: italic;
 }
+#entry .notes em {
+    font-style: normal;
+}
 .missing {
     color: #900;
 }

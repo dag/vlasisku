@@ -11,7 +11,7 @@ def tex2html(tex):
     >>> tex2html('$x_1$ is $10^2$ examples of $x_{2}$.')
     'x<sub>1</sub> is 10<sup>2</sup> examples of x<sub>2</sub>.'
     """
-    def f(m):
+    def math(m):
         t = []
         for x in m.group(1).split('='):
             x = x.replace('{', '').replace('}', '')
@@ -23,7 +23,14 @@ def tex2html(tex):
             else:
                 t.append(x)
         return '='.join(t)
-    return re.sub(r'\$(.+?)\$', f, tex)
+    def typography(m):
+        if m.group(1) == 'emph':
+            return '<em>%s</em>' % m.group(2)
+        elif m.group(1) == 'textbf':
+            return '<strong>%s</strong>' % m.group(2)
+    tex = re.sub(r'\$(.+?)\$', math, tex)
+    tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
+    return tex
 
 def braces2links(text, entries):
     """Turns {quoted words} into HTML links.
