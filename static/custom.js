@@ -5,6 +5,10 @@ function search() {
 
 jQuery(document).ready(function ($) {
     $('a').tipTip({maxWidth: '600px'});
-    $('#query').autocomplete('suggest/', {matchCase: true});
+    $('#query').autocomplete('suggest/', {
+        autoFill: true,
+        matchCase: true,
+        selectFirst: false
+    });
 });
 
