@@ -119,7 +119,7 @@ def query(query):
     classes = [e for e in db.entries.itervalues()
                  if e.grammarclass == query
                  or e.grammarclass
-                 and re.split(r'[0-9]', e.grammarclass)[0] == query]
+                 and re.split(r'[0-9*]', e.grammarclass)[0] == query]
     matches.update(classes)
     
     types = [e for e in db.entries.itervalues()
