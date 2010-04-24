@@ -145,8 +145,23 @@ def query(query):
         redirect(matches.pop())
         return
     
-    del matches
-    del regexquery
+    if not matches:
+        lowerquery = query.lower()
+        
+        glosses = [g for g in db.glosses
+                     if lowerquery in g.gloss.lower()]
+        matches.update(g.entry for g in glosses)
+        
+        definitions = [e for e in db.entries.itervalues()
+                         if e not in matches
+                         and lowerquery in e.definition.lower()]
+        matches.update(definitions)
+        
+        notes =  [e for e in db.entries.itervalues()
+                    if e not in matches
+                    and e.notes
+                    and lowerquery in e.notes.lower()]
+        matches.update(notes)
     
     return locals()
 
