@@ -60,6 +60,9 @@ def suggest(prefix):
                  if e.startswith(prefix))
     glosses = (g.gloss for g in db.glosses
                        if g.gloss.startswith(prefix))
+    classes = set(e.grammarclass for e in db.entries.itervalues()
+                                 if e.grammarclass
+                                 and e.grammarclass.startswith(prefix))
     for x in xrange(5):
         with ignore(StopIteration):
             suggestions.append(entries.next())
@@ -67,6 +70,9 @@ def suggest(prefix):
         with ignore(StopIteration):
             suggestions.append(glosses.next())
             types.append('gloss')
+        with ignore(KeyError):
+            suggestions.append(classes.pop())
+            types.append('class')
     if 'q' in request.GET:
         return '\n'.join(suggestions)
     else:

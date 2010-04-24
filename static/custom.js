@@ -5,6 +5,6 @@ function search() {
 
 jQuery(document).ready(function ($) {
     $('a').tipTip({maxWidth: '600px'});
-    $('#query').autocomplete('suggest/');
+    $('#query').autocomplete('suggest/', {matchCase: true});
 });
 
