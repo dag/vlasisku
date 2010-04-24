@@ -48,10 +48,12 @@ def opensearch():
     path = path.rpartition('opensearch/')[0]
     return locals()
 
-@route('/suggest/:prefix')
+@route('/suggest/:prefix#.*#')
 def suggest(prefix):
-    response.content_type = 'application/json'
-    prefix = prefix.replace('+', ' ')
+    if 'q' in request.GET:
+        prefix = request.GET['q']
+    else:
+        prefix = prefix.replace('+', ' ')
     suggestions = []
     types = []
     entries = (e for e in db.entries.iterkeys()
@@ -65,7 +67,11 @@ def suggest(prefix):
         with ignore(StopIteration):
             suggestions.append(glosses.next())
             types.append('gloss')
-    return dumps([prefix, suggestions, types])
+    if 'q' in request.GET:
+        return '\n'.join(suggestions)
+    else:
+        response.content_type = 'application/json'
+        return dumps([prefix, suggestions, types])
 
 
 @route('/json/:entry')
