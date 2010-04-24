@@ -112,7 +112,8 @@ def query(query):
     
     affix = [e for e in db.entries.itervalues()
                if e not in matches
-               and query in e.affixes]
+               and (query in e.affixes
+               or e.type == 'gismu' and e.word[0:4] == query)]
     matches.update(affix)
     
     classes = [e for e in db.entries.itervalues()
