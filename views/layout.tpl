@@ -21,7 +21,11 @@
 <script type="text/javascript" src="static/custom.js"></script>
 </head>
 <body>
+% if debug:
+<div class="container showgrid">
+% else:
 <div class="container">
+% end
 
 <div id="nav" class="span-6">
 <ol>

@@ -52,14 +52,15 @@ def braces2links(text, entries):
     return re.sub(r'\{(.+?)\}', f, text)
 
 
-def etag(tag):
+def etag(tag, debug=False):
     """Decorator to add ETag handling to a callback."""
     def decorator(f):
         def wrapper(**kwargs):
             response.header['ETag'] = tag
             if request.environ.get('HTTP_IF_NONE_MATCH', None) == tag:
-                abort(304)
-                return
+                if not debug:
+                    abort(304)
+                    return
             return f(**kwargs)
         return wrapper
     return decorator

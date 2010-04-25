@@ -12,10 +12,17 @@ from simplejson import dumps
 import re
 
 
+DEBUG = False
+if __name__ == '__main__':
+    from cli import options
+    DEBUG = options.debug
+
+
 @route('/')
 @view('index')
-@etag(db.etag)
+@etag(db.etag, DEBUG)
 def index():
+    debug = DEBUG
     if 'query' in request.GET:
         redirect(request.GET['query'])
         return
@@ -96,8 +103,9 @@ def json(entry):
 
 @route('/:query#.*#')
 @view('query')
-@etag(db.etag)
+@etag(db.etag, DEBUG)
 def query(query):
+    debug = DEBUG
     query = query.replace('+', ' ')
     matches = set()
     
@@ -167,16 +175,7 @@ def query(query):
 
 
 if __name__ == '__main__':
-    from optparse import OptionParser
     import bottle
-    parser = OptionParser()
-    parser.add_option('-p', '--port', action='store', type='int', default=8080,
-                      help='Listen on this port')
-    parser.add_option('-d', '--debug', action='store_true',
-                      help='Enable debugging')
-    parser.add_option('-r', '--reloader', action='store_true',
-                      help='Reload modules when they are modified')
-    options, args = parser.parse_args()
     bottle.debug(options.debug)
     bottle.run(port=options.port, reloader=options.reloader)
 

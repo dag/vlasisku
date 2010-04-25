@@ -1,4 +1,4 @@
-% rebase layout query=query
+% rebase layout query=query, debug=debug
 
 <div id="matches">
 <ol>

@@ -1,4 +1,4 @@
-% rebase layout
+% rebase layout debug=debug
 
 <div id="types" class="span-6">
 <h2>Types</h2>
