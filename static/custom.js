@@ -12,3 +12,7 @@ jQuery(document).ready(function ($) {
     });
 });
 
+$(window).load(function () {
+    $('#query').attr('autocomplete', 'off');
+});
+
