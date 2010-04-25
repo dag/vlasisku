@@ -8,8 +8,10 @@ from contextlib import contextmanager
 def tex2html(tex):
     """Turn most of the TeX used in jbovlaste into HTML.
     
-    >>> tex2html('$x_1$ is $10^2$ examples of $x_{2}$.')
-    'x<sub>1</sub> is 10<sup>2</sup> examples of x<sub>2</sub>.'
+    >>> tex2html('$x_1$ is $10^2*2$ examples of $x_{2}$.')
+    'x<sub>1</sub> is 10<sup>2\\xc3\\x972</sup> examples of x<sub>2</sub>.'
+    >>> tex2html('\emph{This} is emphasised and \\\\textbf{this} is boldfaced.')
+    '<em>This</em> is emphasised and <strong>this</strong> is boldfaced.'
     """
     def math(m):
         t = []
@@ -35,8 +37,11 @@ def tex2html(tex):
 def braces2links(text, entries):
     """Turns {quoted words} into HTML links.
     
-    >>> braces2links("See also {mupli}, {mu'u}.")
-    'See also <a href="mupli">mupli</a>, <a href="mu\\'u">mu\\'u</a>.'
+    >>> import db
+    >>> braces2links('See also {mupli}.', db.entries)
+    'See also <a href="mupli" title="x<sub>1</sub> is an example/sample/specimen/instance/case/illustration of common property(s) x<sub>2</sub> of set x<sub>3</sub>.">mupli</a>.'
+    >>> braces2links('See also {missing}.', db.entries)
+    'See also <a href="http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=missing" title="This word is missing, please add it!" class="missing">missing</a>.'
     """
     def f(m):
         try:
