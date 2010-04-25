@@ -55,7 +55,7 @@
         <a href="{{gloss.entry}}">{{gloss.entry}}</a>
     % if gloss.sense:
         in sense "{{gloss.sense}}"
-    %end
+    % end
     % if gloss.place:
         on place {{gloss.place}}
     % end
