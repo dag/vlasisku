@@ -10,9 +10,8 @@ jQuery(document).ready(function ($) {
         matchCase: true,
         selectFirst: false
     });
-});
-
-$(window).load(function () {
-    $('#query').attr('autocomplete', 'off');
+    $(window).load(function () {
+        $('#query').attr('autocomplete', 'off');
+    });
 });
 
