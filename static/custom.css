@@ -85,7 +85,7 @@ h2 {
 }
 
 a[href^="http:"], a[href^="https:"] {
-  padding:2px 22px 2px 0;
+  padding:2px 16px 2px 0;
   margin:-2px 0;
   background-repeat: no-repeat;
   background-position: right center;
