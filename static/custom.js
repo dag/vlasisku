@@ -1,9 +1,9 @@
 function search() {
-    window.location = encodeURIComponent(document.getElementById('query').value);
+    window.location = encodeURIComponent(jQuery('#query').attr('value'));
     return false;
 }
 
-jQuery(document).ready(function ($) {
+jQuery(function ($) {
     $('a').tipTip({maxWidth: '600px'});
     $('#query').autocomplete('suggest/', {
         autoFill: true,
