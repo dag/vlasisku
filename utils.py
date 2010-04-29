@@ -39,9 +39,13 @@ def braces2links(text, entries):
     
     >>> import db
     >>> braces2links('See also {mupli}.', db.entries)
-    'See also <a href="mupli" title="x<sub>1</sub> is an example/sample/specimen/instance/case/illustration of common property(s) x<sub>2</sub> of set x<sub>3</sub>.">mupli</a>.'
+    'See also <a href="mupli" title="x<sub>1</sub> is
+    an example/sample/specimen/instance/case/illustration of
+    common property(s) x<sub>2</sub> of set x<sub>3</sub>.">mupli</a>.'
     >>> braces2links('See also {missing}.', db.entries)
-    'See also <a href="http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=missing" title="This word is missing, please add it!" class="missing">missing</a>.'
+    'See also <a
+    href="http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=missing"
+    title="This word is missing, please add it!" class="missing">missing</a>.'
     """
     def f(m):
         try:
@@ -82,5 +86,5 @@ def ignore(exc):
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod()
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
