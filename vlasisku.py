@@ -115,8 +115,8 @@ def query(query):
             components = [(a, [e for e in db.entries.itervalues()
                                  if a in e.searchaffixes][0])
                                  for a in compound2affixes(entry.word)]
-            components = ['<a href="%s" title="%s">%s</a>' %
-                            (e, e.definition, a)
+            components = ['<a href="%s" title="<strong>%s:</strong> %s">%s</a>'
+                            % (e, e, e.definition, a)
                             for a, e in components]
     
     glosses = [g for g in db.gloss_stems.get(querystem, [])
