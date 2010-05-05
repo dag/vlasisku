@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 
 import re
+from stemming.porter2 import stem
 from bottle import response, request, abort
 from contextlib import contextmanager
 
@@ -9,27 +10,27 @@ def tex2html(tex):
     """Turn most of the TeX used in jbovlaste into HTML.
     
     >>> tex2html('$x_1$ is $10^2*2$ examples of $x_{2}$.')
-    'x<sub>1</sub> is 10<sup>2\\xc3\\x972</sup> examples of x<sub>2</sub>.'
+    u'x<sub>1</sub> is 10<sup>2\\xd72</sup> examples of x<sub>2</sub>.'
     >>> tex2html('\emph{This} is emphasised and \\\\textbf{this} is boldfaced.')
-    '<em>This</em> is emphasised and <strong>this</strong> is boldfaced.'
+    u'<em>This</em> is emphasised and <strong>this</strong> is boldfaced.'
     """
     def math(m):
         t = []
         for x in m.group(1).split('='):
             x = x.replace('{', '').replace('}', '')
-            x = x.replace('*', u'×'.encode('utf-8'))
+            x = x.replace('*', u'×')
             if '_' in x:
-                t.append('%s<sub>%s</sub>' % tuple(x.split('_')[0:2]))
+                t.append(u'%s<sub>%s</sub>' % tuple(x.split('_')[0:2]))
             elif '^' in x:
-                t.append('%s<sup>%s</sup>' % tuple(x.split('^')[0:2]))
+                t.append(u'%s<sup>%s</sup>' % tuple(x.split('^')[0:2]))
             else:
                 t.append(x)
         return '='.join(t)
     def typography(m):
         if m.group(1) == 'emph':
-            return '<em>%s</em>' % m.group(2)
+            return u'<em>%s</em>' % m.group(2)
         elif m.group(1) == 'textbf':
-            return '<strong>%s</strong>' % m.group(2)
+            return u'<strong>%s</strong>' % m.group(2)
     tex = re.sub(r'\$(.+?)\$', math, tex)
     tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
     return tex
@@ -39,26 +40,34 @@ def braces2links(text, entries):
     
     >>> import db
     >>> braces2links('See also {mupli}.', db.entries)
-    'See also <a href="mupli" title="x<sub>1</sub> is
+    u'See also <a href="mupli" title="x<sub>1</sub> is
     an example/sample/specimen/instance/case/illustration of
     common property(s) x<sub>2</sub> of set x<sub>3</sub>.">mupli</a>.'
     >>> braces2links('See also {missing}.', db.entries)
-    'See also <a
+    u'See also <a
     href="http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=missing"
     title="This word is missing, please add it!" class="missing">missing</a>.'
     """
     def f(m):
         try:
             values = (m.group(1), entries[m.group(1)].definition, m.group(1))
-            return '<a href="%s" title="%s">%s</a>' % values
+            return u'<a href="%s" title="%s">%s</a>' % values
         except KeyError:
-            link = ['<a href="']
-            link.append('http://jbovlaste.lojban.org')
-            link.append('/dict/addvalsi.html?valsi=%s"')
-            link.append(' title="This word is missing, please add it!"')
-            link.append(' class="missing">%s</a>')
+            link = [u'<a href="']
+            link.append(u'http://jbovlaste.lojban.org')
+            link.append(u'/dict/addvalsi.html?valsi=%s"')
+            link.append(u' title="This word is missing, please add it!"')
+            link.append(u' class="missing">%s</a>')
             return ''.join(link) % (m.group(1), m.group(1))
     return re.sub(r'\{(.+?)\}', f, text)
+
+
+def add_stems(token, collection, item):
+    stemmed = stem(token.lower())
+    if stemmed not in collection:
+        collection[stemmed] = []
+    if item not in collection[stemmed]:
+        collection[stemmed].append(item)
 
 
 def etag(tag, debug=False):

@@ -10,6 +10,7 @@ from os.path import join, dirname
 from utils import ignore
 from simplejson import dumps
 import re
+from stemming.porter2 import stem
 
 
 DEBUG = False
@@ -57,10 +58,7 @@ def opensearch():
 
 @route('/suggest/:prefix#.*#')
 def suggest(prefix):
-    if 'q' in request.GET:
-        prefix = request.GET['q']
-    else:
-        prefix = prefix.replace('+', ' ')
+    prefix = request.GET.get('q', prefix.replace('+', ' ')).decode('utf-8')
     suggestions = []
     types = []
     entries = (e for e in db.entries.iterkeys()
@@ -106,16 +104,16 @@ def json(entry):
 @etag(db.etag, DEBUG)
 def query(query):
     debug = DEBUG
-    query = query.replace('+', ' ')
+    query = query.decode('utf-8').replace('+', ' ')
+    querystem = stem(query.lower())
     matches = set()
     
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
     
-    glosses = [g for g in db.glosses
-                 if g.gloss == query
-                 or g.gloss == query.capitalize()]
+    glosses = [g for g in db.gloss_stems.get(querystem, [])
+                 if g.entry not in matches]
     matches.update(g.entry for g in glosses)
     
     affix = [e for e in db.entries.itervalues()
@@ -135,41 +133,17 @@ def query(query):
                if e.type == query]
     matches.update(types)
     
-    regexquery = r'\b(%s|%s)\b' % (re.escape(query),
-                                   re.escape(query.capitalize()))
-    
-    definitions = [e for e in db.entries.itervalues()
-                     if e not in matches
-                     and re.search(regexquery, e.definition)]
+    definitions = [e for e in db.definition_stems.get(querystem, [])
+                     if e not in matches]
     matches.update(definitions)
     
-    notes =  [e for e in db.entries.itervalues()
-                if e not in matches
-                and e.notes
-                and re.search(regexquery, e.notes)]
+    notes = [e for e in db.note_stems.get(querystem, [])
+               if e not in matches]
     matches.update(notes)
     
     if not entry and len(matches) == 1:
         redirect(matches.pop())
         return
-    
-    if not matches:
-        lowerquery = query.lower()
-        
-        glosses = [g for g in db.glosses
-                     if lowerquery in g.gloss.lower()]
-        matches.update(g.entry for g in glosses)
-        
-        definitions = [e for e in db.entries.itervalues()
-                         if e not in matches
-                         and lowerquery in e.definition.lower()]
-        matches.update(definitions)
-        
-        notes =  [e for e in db.entries.itervalues()
-                    if e not in matches
-                    and e.notes
-                    and lowerquery in e.notes.lower()]
-        matches.update(notes)
     
     return locals()
 

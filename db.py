@@ -6,12 +6,16 @@ from ordereddict import OrderedDict
 from os.path import join, dirname
 import yaml
 import xml.etree.cElementTree as ElementTree
-from utils import tex2html, braces2links
+from utils import tex2html, braces2links, add_stems
 from os import stat
+import re
 
 
 entries = OrderedDict()
 glosses = []
+definition_stems = {}
+note_stems = {}
+gloss_stems = {}
 
 with open(join(dirname(__file__), 'data', 'class-scales.yml')) as f:
     class_scales = yaml.load(f)
@@ -62,9 +66,11 @@ for type in types:
             entry.word = valsi.get('word')
             
             for child in valsi.getchildren():
-                text = child.text.encode('utf-8')
+                text = child.text
+                
                 if child.tag == 'rafsi':
                     entry.affixes.append(text)
+                
                 elif child.tag == 'selmaho':
                     entry.grammarclass = text
                     for grammarclass, terminator in terminators.iteritems():
@@ -77,10 +83,16 @@ for type in types:
                             section = '%s.%s' % tuple(path)
                             link = 'http://dag.github.com/cll/%s/%s/'
                             entry.cll.append((section, link % tuple(path)))
+                
                 elif child.tag == 'definition':
                     entry.definition = tex2html(text)
+                    for token in set(re.findall(r"[\w']+", text, re.UNICODE)):
+                        add_stems(token, definition_stems, entry)
+                
                 elif child.tag == 'notes':
                     entry.notes = tex2html(text)
+                    for token in set(re.findall(r"[\w']+", text, re.UNICODE)):
+                        add_stems(token, note_stems, entry)
             
             entries[entry.word] = entry
 
@@ -90,13 +102,14 @@ for entry in entries.itervalues():
 
 for word in jbovlaste.findall('//nlword'):
     gloss = Gloss()
-    gloss.gloss = word.get('word').encode('utf-8')
+    gloss.gloss = word.get('word')
     gloss.entry = entries[word.get('valsi')]
     if word.get('sense'):
-        gloss.sense = word.get('sense').encode('utf-8')
+        gloss.sense = word.get('sense')
     if word.get('place'):
-        gloss.place = word.get('place').encode('utf-8')
+        gloss.place = word.get('place')
     glosses.append(gloss)
+    add_stems(gloss.gloss, gloss_stems, gloss)
 
 
 etag = str(stat(join(dirname(__file__), 'data', 'jbovlaste.xml')).st_mtime)

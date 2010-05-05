@@ -32,9 +32,9 @@
 % end
     <span class="type">{{entry.type}}</span>
 </h1>
-<p class="definition">{{entry.definition}}</p>
+<p class="definition">{{entry.definition.encode('utf-8')}}</p>
 % if entry.notes:
-<p class="notes">{{entry.notes}}</p>
+<p class="notes">{{entry.notes.encode('utf-8')}}</p>
 % end
 <ul class="links">
 % for section, link in entry.cll:
@@ -54,13 +54,13 @@
     <dt>
         <a href="{{gloss.entry}}">{{gloss.entry}}</a>
     % if gloss.sense:
-        in sense "{{gloss.sense}}"
+        in sense "{{gloss.sense.encode('utf-8')}}"
     % end
     % if gloss.place:
         on place {{gloss.place}}
     % end
     </dt>
-    <dd>{{gloss.entry.definition}}</dd>
+    <dd>{{gloss.entry.definition.encode('utf-8')}}</dd>
 % end
 </dl>
 <hr>
