@@ -4,10 +4,9 @@
 from __future__ import with_statement
 
 from bottle import route, view, request, redirect, response, abort, send_file
-from utils import etag
+from utils import etag, ignore
 import db
 from os.path import join, dirname
-from utils import ignore
 from simplejson import dumps
 import re
 from stemming.porter2 import stem
