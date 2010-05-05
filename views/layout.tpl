@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 % try:
-<title>{{query}} - vlasisku</title>
+<title>{{query.encode('utf-8')}} - vlasisku</title>
 % except NameError:
 <title>vlasisku</title>
 % end
@@ -38,7 +38,7 @@
 <form action="/" method="get" onsubmit="return search();" id="search" class="inline">
     <p>
     % try:
-        <input type="text" value="{{query}}" size="30" id="query" name="query" accesskey="f" onfocus="this.select()">
+        <input type="text" value="{{query.encode('utf-8')}}" size="30" id="query" name="query" accesskey="f" onfocus="this.select()">
     % except NameError:
         <input type="text" size="30" id="query" name="query" accesskey="f" onfocus="this.select()">
     % end

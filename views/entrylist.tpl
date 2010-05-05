@@ -4,7 +4,7 @@
 <dl>
 % for entry in entries:
     <dt><a href="{{entry}}">{{entry}}</a></dt>
-    <dd>{{entry.definition}}</dd>
+    <dd>{{entry.definition.encode('utf-8')}}</dd>
 % end
 </dl>
 <hr>
