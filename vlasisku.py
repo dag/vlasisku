@@ -110,6 +110,7 @@ def query(query):
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
+        components = None
         if entry.type == 'lujvo':
             components = [(a, [e for e in db.entries.itervalues()
                                  if a in e.searchaffixes][0])
