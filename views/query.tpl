@@ -11,6 +11,10 @@
 </ol>
 </div>
 
+% if not matches:
+<p class="error">I couldn't find you anything, sorry!</p>
+% end
+
 % if entry:
 <div id="entry">
 <h1>
