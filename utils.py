@@ -1,9 +1,39 @@
 #-*- coding:utf-8 -*-
 
+from string import Template
 import re
 from stemming.porter2 import stem
 from bottle import response, request, abort
 from contextlib import contextmanager
+
+
+def compound2affixes(compound):
+    c = r'[bcdfgjklmnprstvxz]'
+    v = r'[aeiou]'
+    cc = r'(?:'
+    cc += r'bl|br|'
+    cc += r'cf|ck|cl|cm|cn|cp|cr|ct|'
+    cc += r'dj|dr|dz|fl|fr|gl|gr|'
+    cc += r'jb|jd|jg|jm|jv|kl|kr|'
+    cc += r'ml|mr|pl|pr|'
+    cc += r'sf|sk|sl|sm|sn|sp|sr|st|'
+    cc += r'tc|tr|ts|vl|vr|xl|xr|'
+    cc += r'zb|zd|zg|zm|zv)'
+    vv = r'(?:ai|ei|oi|au)'
+    rafsi3v = Template(r"(?:$cc$v|$c$vv|$c$v'$v)").substitute(locals())
+    rafsi3 = Template(r'(?:$rafsi3v|$c$v$c)').substitute(locals())
+    rafsi4 = Template(r'(?:$c$v$c$c|$cc$v$c)').substitute(locals())
+    rafsi5 = Template(r'$rafsi4$v').substitute(locals())
+    
+    for i in xrange(1, len(compound)/3+1):
+        reg = Template(r'(?:($rafsi3)[nry]??|($rafsi4)y)')
+        reg = reg.substitute(locals()) * i
+        reg2 = Template(r'^$reg($rafsi3v|$rafsi5)$$').substitute(locals())
+        matches = re.findall(reg2, compound)
+        if matches:
+            return [r for r in matches[0] if r]
+    
+    return []
 
 
 def tex2html(tex):

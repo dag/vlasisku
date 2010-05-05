@@ -4,7 +4,7 @@
 from __future__ import with_statement
 
 from bottle import route, view, request, redirect, response, abort, send_file
-from utils import etag, ignore
+from utils import etag, ignore, compound2affixes
 import db
 from os.path import join, dirname
 from simplejson import dumps
@@ -110,6 +110,13 @@ def query(query):
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
+        if entry.type == 'lujvo':
+            components = [(a, [e for e in db.entries.itervalues()
+                                 if a in e.searchaffixes][0])
+                                 for a in compound2affixes(entry.word)]
+            components = ['<a href="%s" title="%s">%s</a>' %
+                            (e, e.definition, a)
+                            for a, e in components]
     
     glosses = [g for g in db.gloss_stems.get(querystem, [])
                  if g.entry not in matches]
@@ -117,9 +124,7 @@ def query(query):
     
     affix = [e for e in db.entries.itervalues()
                if e not in matches
-               and (query in e.affixes
-               or e.type in ('gismu', 'experimental gismu')
-               and e.word[0:4] == query)]
+               and query in e.searchaffixes]
     matches.update(affix)
     
     classes = [e for e in db.entries.itervalues()
@@ -143,6 +148,16 @@ def query(query):
     if not entry and len(matches) == 1:
         redirect(matches.pop())
         return
+    
+    sourcemetaphor = []
+    unknownaffixes = None
+    if not matches:
+        try:
+            sourcemetaphor = [[e for e in db.entries.itervalues()
+                                 if a in e.searchaffixes][0]
+                                 for a in compound2affixes(query)]
+        except IndexError:
+            unknownaffixes = True
     
     return locals()
 

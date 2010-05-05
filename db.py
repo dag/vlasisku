@@ -31,6 +31,7 @@ class Entry(object):
     word = None
     type = None
     affixes = None
+    searchaffixes = None
     grammarclass = None
     terminator = None
     terminates = None
@@ -41,6 +42,7 @@ class Entry(object):
     # We need new lists for every instance.
     def __init__(self):
         self.affixes = []
+        self.searchaffixes = []
         self.terminates = []
         self.cll = []
     
@@ -64,12 +66,17 @@ for type in types:
             entry = Entry()
             entry.type = type
             entry.word = valsi.get('word')
+
+            if type in ('gismu', 'experimental gismu'):
+                entry.searchaffixes.append(entry.word)
+                entry.searchaffixes.append(entry.word[0:4])
             
             for child in valsi.getchildren():
                 text = child.text
                 
                 if child.tag == 'rafsi':
                     entry.affixes.append(text)
+                    entry.searchaffixes.append(text)
                 
                 elif child.tag == 'selmaho':
                     entry.grammarclass = text

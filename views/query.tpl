@@ -15,10 +15,22 @@
 <p class="error">I couldn't find you anything, sorry!</p>
 % end
 
+% if unknownaffixes:
+<p class="error">Compound built with unknown affixes.</p>
+% end
+
+% if sourcemetaphor:
+% include entrylist entries=sourcemetaphor, id='source', title='This nonce compound is composed of:'
+% end
+
 % if entry:
 <div id="entry">
 <h1>
+% if components:
+{{''.join(components)}}
+% else:
     {{entry}}
+% end
 % if entry.grammarclass:
     <sub>
     % for grammarclass in entry.terminates:
