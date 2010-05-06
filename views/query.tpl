@@ -16,7 +16,7 @@
 % end
 
 % if similar:
-<p class="notice">
+<p>
     <strong>Did you mean...</strong>
     {{', '.join('<a href="%s">%s</a>' % (s, s) for s in similar)}}
 </p>

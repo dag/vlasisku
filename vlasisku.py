@@ -4,11 +4,10 @@
 from __future__ import with_statement
 
 from bottle import route, view, request, redirect, response, abort, send_file
-from utils import etag, ignore, compound2affixes
+from utils import etag, ignore, compound2affixes, dameraulevenshtein
 import db
 from os.path import join, dirname
 from simplejson import dumps
-from difflib import SequenceMatcher
 import re
 from stemming.porter2 import stem
 
@@ -109,10 +108,6 @@ def query(query):
     components = None
     matches = set()
     
-    similar = [s for s in db.entries.keys() + [g.gloss for g in db.glosses]
-                 if s != query
-                 and SequenceMatcher(a=query, b=s).ratio() >= 0.8]
-    
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
@@ -161,6 +156,7 @@ def query(query):
     
     sourcemetaphor = []
     unknownaffixes = None
+    similar = None
     if not matches:
         try:
             sourcemetaphor = [[e for e in db.entries.itervalues()
@@ -169,6 +165,15 @@ def query(query):
                                  if len(a) != 1]
         except IndexError:
             unknownaffixes = True
+        
+        similar = [e.word for e in db.entries.itervalues()
+                          if e not in matches
+                          and dameraulevenshtein(query, e.word) == 1]
+        
+        similar += [g.gloss for g in db.glosses
+                            if g.entry not in matches
+                            and g.gloss not in similar
+                            and dameraulevenshtein(query, g.gloss) == 1]
     
     return locals()
 
