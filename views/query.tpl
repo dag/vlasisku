@@ -27,7 +27,7 @@
 <div id="entry">
 <h1>
 % if components:
-{{''.join(components)}}
+    {{components}}
 % else:
     {{entry}}
 % end

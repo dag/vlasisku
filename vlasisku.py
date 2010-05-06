@@ -105,19 +105,23 @@ def query(query):
     debug = DEBUG
     query = query.decode('utf-8').replace('+', ' ')
     querystem = stem(query.lower())
+    components = None
     matches = set()
     
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
-        components = None
         if entry.type == 'lujvo':
-            components = [(a, [e for e in db.entries.itervalues()
-                                 if a in e.searchaffixes][0])
-                                 for a in compound2affixes(entry.word)]
-            components = ['<a href="%s" title="<strong>%s:</strong> %s">%s</a>'
-                            % (e, e, e.definition, a)
-                            for a, e in components]
+            components = ''
+            for a in compound2affixes(entry.word):
+                if len(a) == 1:
+                    components += a
+                else:
+                    word = [e for e in db.entries.itervalues()
+                              if a in e.searchaffixes].pop()
+                    components += '<a href="%s" ' % word
+                    components += 'title="<strong>%s:</strong> ' % word
+                    components += '%s">%s</a>' % (word.definition, a)
     
     glosses = [g for g in db.gloss_stems.get(querystem, [])
                  if g.entry not in matches]
@@ -155,8 +159,9 @@ def query(query):
     if not matches:
         try:
             sourcemetaphor = [[e for e in db.entries.itervalues()
-                                 if a in e.searchaffixes][0]
-                                 for a in compound2affixes(query)]
+                                 if a in e.searchaffixes].pop()
+                                 for a in compound2affixes(query)
+                                 if len(a) != 1]
         except IndexError:
             unknownaffixes = True
     

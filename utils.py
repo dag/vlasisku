@@ -26,7 +26,7 @@ def compound2affixes(compound):
     rafsi5 = Template(r'$rafsi4$v').substitute(locals())
     
     for i in xrange(1, len(compound)/3+1):
-        reg = Template(r'(?:($rafsi3)[nry]??|($rafsi4)y)')
+        reg = Template(r'(?:($rafsi3)([nry])??|($rafsi4)(y))')
         reg = reg.substitute(locals()) * i
         reg2 = Template(r'^$reg($rafsi3v|$rafsi5)$$').substitute(locals())
         matches = re.findall(reg2, compound)
