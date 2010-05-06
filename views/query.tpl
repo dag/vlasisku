@@ -15,6 +15,13 @@
 <p class="error">I couldn't find you anything, sorry!</p>
 % end
 
+% if similar:
+<p class="notice">
+    <strong>Did you mean...</strong>
+    {{', '.join('<a href="%s">%s</a>' % (s, s) for s in similar)}}
+</p>
+% end
+
 % if unknownaffixes:
 <p class="error">Compound built with unknown affixes.</p>
 % end

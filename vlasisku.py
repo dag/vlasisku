@@ -8,6 +8,7 @@ from utils import etag, ignore, compound2affixes
 import db
 from os.path import join, dirname
 from simplejson import dumps
+from difflib import SequenceMatcher
 import re
 from stemming.porter2 import stem
 
@@ -107,6 +108,10 @@ def query(query):
     querystem = stem(query.lower())
     components = None
     matches = set()
+    
+    similar = [s for s in db.entries.keys() + [g.gloss for g in db.glosses]
+                 if s != query
+                 and SequenceMatcher(a=query, b=s).ratio() >= 0.8]
     
     entry = db.entries.get(query, None)
     if entry:    
