@@ -107,16 +107,19 @@ for entry in entries.itervalues():
     if entry.notes:
         entry.notes = braces2links(entry.notes, entries)
 
-for word in jbovlaste.findall('//nlword'):
-    gloss = Gloss()
-    gloss.gloss = word.get('word')
-    gloss.entry = entries[word.get('valsi')]
-    if word.get('sense'):
-        gloss.sense = word.get('sense')
-    if word.get('place'):
-        gloss.place = word.get('place')
-    glosses.append(gloss)
-    add_stems(gloss.gloss, gloss_stems, gloss)
+for type in types:
+    for word in jbovlaste.findall('//nlword'):
+        entry = entries[word.get('valsi')]
+        if entry.type == type:
+            gloss = Gloss()
+            gloss.gloss = word.get('word')
+            gloss.entry = entry
+            if word.get('sense'):
+                gloss.sense = word.get('sense')
+            if word.get('place'):
+                gloss.place = word.get('place')
+            glosses.append(gloss)
+            add_stems(gloss.gloss, gloss_stems, gloss)
 
 
 etag = str(stat(join(dirname(__file__), 'data', 'jbovlaste.xml')).st_mtime)
