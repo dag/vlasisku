@@ -5,6 +5,7 @@ from __future__ import with_statement
 from ordereddict import OrderedDict
 from os.path import join, dirname
 import yaml
+from models import Entry, Gloss
 import xml.etree.cElementTree as ElementTree
 from utils import tex2html, braces2links, add_stems
 from os import stat
@@ -25,35 +26,6 @@ with open(join(dirname(__file__), 'data', 'cll.yml')) as f:
 
 with open(join(dirname(__file__), 'data', 'terminators.yml')) as f:
     terminators = yaml.load(f)
-
-
-class Entry(object):
-    word = None
-    type = None
-    affixes = None
-    searchaffixes = None
-    grammarclass = None
-    terminator = None
-    terminates = None
-    cll = None
-    definition = None
-    notes = None
-    
-    # We need new lists for every instance.
-    def __init__(self):
-        self.affixes = []
-        self.searchaffixes = []
-        self.terminates = []
-        self.cll = []
-    
-    def __str__(self):
-        return self.word
-
-class Gloss(object):
-    gloss = None
-    entry = None
-    sense = None
-    place = None
 
 
 jbovlaste = ElementTree.parse(join(dirname(__file__), 'data', 'jbovlaste.xml'))

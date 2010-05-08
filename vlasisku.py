@@ -5,7 +5,7 @@ from __future__ import with_statement
 
 from bottle import route, view, request, redirect, response, abort, send_file
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
-import db
+import dbpickler as db
 from os.path import join, dirname
 from simplejson import dumps
 import re
