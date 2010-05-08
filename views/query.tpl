@@ -1,4 +1,4 @@
-% rebase layout query=query, debug=debug
+% rebase layout query=query, showgrid=showgrid
 
 <div id="matches">
 <ol>

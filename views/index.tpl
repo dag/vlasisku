@@ -1,4 +1,4 @@
-% rebase layout debug=debug
+% rebase layout showgrid=showgrid
 
 <div id="types" class="span-6">
 <h2>Types</h2>

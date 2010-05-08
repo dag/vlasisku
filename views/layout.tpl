@@ -21,11 +21,7 @@
 <script type="text/javascript" src="static/custom.js"></script>
 </head>
 <body>
-% if debug:
-<div class="container showgrid">
-% else:
-<div class="container">
-% end
+<div class="container{{' showgrid' if showgrid else ''}}">
 
 <div id="nav" class="span-6">
 <ol>

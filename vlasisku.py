@@ -12,17 +12,14 @@ import re
 from stemming.porter2 import stem
 
 
-DEBUG = False
-if __name__ == '__main__':
-    from cli import options
-    DEBUG = options.debug
+DEBUG = __name__ == '__main__'
 
 
 @route('/')
 @view('index')
 @etag(db.etag, DEBUG)
 def index():
-    debug = DEBUG
+    showgrid = 'showgrid' in request.GET
     if 'query' in request.GET:
         redirect(request.GET['query'])
         return
@@ -102,7 +99,7 @@ def json(entry):
 @view('query')
 @etag(db.etag, DEBUG)
 def query(query):
-    debug = DEBUG
+    showgrid = 'showgrid' in request.GET
     query = query.decode('utf-8').replace('+', ' ')
     querystem = stem(query.lower())
     matches = set()
@@ -168,6 +165,6 @@ def query(query):
 
 if __name__ == '__main__':
     import bottle
-    bottle.debug(options.debug)
-    bottle.run(port=options.port, reloader=options.reloader)
+    bottle.debug(True)
+    bottle.run(port=8080, reloader=True)
 
