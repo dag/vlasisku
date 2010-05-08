@@ -1,3 +1,6 @@
+from utils import compound2affixes
+import dbpickler as db
+
 
 class Entry(object):
     word = None
@@ -20,6 +23,20 @@ class Entry(object):
     
     def __str__(self):
         return self.word
+    
+    def components(self):
+        if self.type == 'lujvo':
+            components = ''
+            for a in compound2affixes(self.word):
+                if len(a) == 1:
+                    components += a
+                else:
+                    word = [e for e in db.entries.itervalues()
+                              if a in e.searchaffixes].pop()
+                    components += '<a href="%s" ' % word
+                    components += 'title="<strong>%s:</strong> ' % word
+                    components += '%s">%s</a>' % (word.definition, a)
+            return components
 
 
 class Gloss(object):

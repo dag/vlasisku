@@ -105,23 +105,11 @@ def query(query):
     debug = DEBUG
     query = query.decode('utf-8').replace('+', ' ')
     querystem = stem(query.lower())
-    components = None
     matches = set()
     
     entry = db.entries.get(query, None)
     if entry:    
         matches.add(entry)
-        if entry.type == 'lujvo':
-            components = ''
-            for a in compound2affixes(entry.word):
-                if len(a) == 1:
-                    components += a
-                else:
-                    word = [e for e in db.entries.itervalues()
-                              if a in e.searchaffixes].pop()
-                    components += '<a href="%s" ' % word
-                    components += 'title="<strong>%s:</strong> ' % word
-                    components += '%s">%s</a>' % (word.definition, a)
     
     glosses = [g for g in db.gloss_stems.get(querystem, [])
                  if g.entry not in matches]

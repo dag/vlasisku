@@ -33,11 +33,7 @@
 % if entry:
 <div id="entry">
 <h1>
-% if components:
-    {{components}}
-% else:
-    {{entry}}
-% end
+    {{entry.components() or entry}}
 % if entry.grammarclass:
     <sub>
     % for grammarclass in entry.terminates:
