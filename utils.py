@@ -65,7 +65,7 @@ def tex2html(tex):
         format = '\n%s'
         if m.group(1).startswith('|'):
             format = '\n<span style="font-family: monospace"> %s</span>'
-        elif m.group(1).startswith(('>', '-')):
+        elif m.group(1).startswith('>'):
             format = '\n<span style="font-family: monospace">%s</span>'
         return format % m.group(1)
     tex = re.sub(r'\$(.+?)\$', math, tex)
