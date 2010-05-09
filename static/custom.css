@@ -54,6 +54,7 @@
 }
 #entry .definition {
     font-size: 120%;
+    white-space: pre-wrap;
 }
 #entry .notes {
     font-style: italic;
@@ -84,6 +85,10 @@ h2 {
     font-size: 140%;
 }
 
+dd {
+    white-space: pre-wrap;
+}
+
 a[href^="http:"], a[href^="https:"] {
   padding:2px 16px 2px 0;
   margin:-2px 0;
@@ -94,5 +99,6 @@ a[href^="http:"], a[href^="https:"] {
 
 #tiptip_content {
     font-size: 1.3em;
+    white-space: pre-wrap;
 }
 

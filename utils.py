@@ -61,8 +61,16 @@ def tex2html(tex):
             return u'<em>%s</em>' % m.group(2)
         elif m.group(1) == 'textbf':
             return u'<strong>%s</strong>' % m.group(2)
+    def lines(m):
+        format = '\n%s'
+        if m.group(1).startswith('|'):
+            format = '\n<span style="font-family: monospace"> %s</span>'
+        elif m.group(1).startswith(('>', '-')):
+            format = '\n<span style="font-family: monospace">%s</span>'
+        return format % m.group(1)
     tex = re.sub(r'\$(.+?)\$', math, tex)
     tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
+    tex = re.sub(r'(?![|>\-])\s\s+(.+)', lines, tex)
     return tex
 
 def braces2links(text, entries):
