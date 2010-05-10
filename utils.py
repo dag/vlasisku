@@ -64,13 +64,17 @@ def tex2html(tex):
     def lines(m):
         format = '\n%s'
         if m.group(1).startswith('|'):
-            format = '\n<span style="font-family: monospace"> %s</span>'
+            format = '\n<span style="font-family: monospace">    %s</span>'
         elif m.group(1).startswith('>'):
-            format = '\n<span style="font-family: monospace">%s</span>'
+            format = '\n<span style="font-family: monospace">   %s</span>'
+        return format % m.group(1)
+    def puho(m):
+        format = 'inchoative\n<span style="font-family: monospace">%s</span>'
         return format % m.group(1)
     tex = re.sub(r'\$(.+?)\$', math, tex)
     tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
     tex = re.sub(r'(?![|>\-])\s\s+(.+)', lines, tex)
+    tex = re.sub(r'inchoative\s\s+(----.+)', puho, tex)
     return tex
 
 def braces2links(text, entries):
