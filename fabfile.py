@@ -14,6 +14,11 @@ def retag():
         run('touch data/jbovlaste.xml')
     restart()
 
+def redb():
+    with cd(appdir):
+        run('rm data/db.pickle')
+    retag()
+
 def syncdb():
     with cd(appdir):
         run('rm data/db.pickle')
