@@ -3,9 +3,10 @@
 
 from __future__ import with_statement
 
-from bottle import route, view, request, redirect, response, abort, send_file
+from bottle import route, request, redirect, response, abort, send_file
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
 import dbpickler as db
+from render import Render
 from os.path import join, dirname
 from simplejson import dumps
 import re
@@ -13,10 +14,10 @@ from stemming.porter2 import stem
 
 
 DEBUG = __name__ == '__main__'
+render = Render(DEBUG)
 
 
 @route('/')
-@view('index')
 @etag(db.etag, DEBUG)
 def index():
     showgrid = 'showgrid' in request.GET
@@ -34,7 +35,7 @@ def index():
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales
-    return locals()
+    return render.html('index', locals())
 
 
 @route('/(?P<filename>favicon\.ico)')
@@ -44,13 +45,12 @@ def static(filename):
 
 
 @route('/opensearch/')
-@view('opensearch')
 def opensearch():
     response.content_type = 'application/xml'
     hostname = request.environ['HTTP_HOST']
     path = request.environ.get('REQUEST_URI', '/opensearch/')
     path = path.rpartition('opensearch/')[0]
-    return locals()
+    return render.xml('opensearch', locals())
 
 @route('/suggest/:prefix#.*#')
 def suggest(prefix):
@@ -96,7 +96,6 @@ def json(entry):
 
 
 @route('/:query#.*#')
-@view('query')
 @etag(db.etag, DEBUG)
 def query(query):
     showgrid = 'showgrid' in request.GET
@@ -160,7 +159,7 @@ def query(query):
                             and g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
     
-    return locals()
+    return render.html('query', locals())
 
 
 if __name__ == '__main__':

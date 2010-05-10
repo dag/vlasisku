@@ -3,3 +3,4 @@ ordereddict
 pyyaml
 simplejson
 stemming
+genshi
