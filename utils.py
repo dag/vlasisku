@@ -1,6 +1,5 @@
 #-*- coding:utf-8 -*-
 
-from string import Template
 import re
 from stemming.porter2 import stem
 from bottle import response, request, abort
@@ -10,26 +9,24 @@ from contextlib import contextmanager
 def compound2affixes(compound):
     c = r'[bcdfgjklmnprstvxz]'
     v = r'[aeiou]'
-    cc = r'(?:'
-    cc += r'bl|br|'
-    cc += r'cf|ck|cl|cm|cn|cp|cr|ct|'
-    cc += r'dj|dr|dz|fl|fr|gl|gr|'
-    cc += r'jb|jd|jg|jm|jv|kl|kr|'
-    cc += r'ml|mr|pl|pr|'
-    cc += r'sf|sk|sl|sm|sn|sp|sr|st|'
-    cc += r'tc|tr|ts|vl|vr|xl|xr|'
-    cc += r'zb|zd|zg|zm|zv)'
+    cc = r'''(?:bl|br|
+                cf|ck|cl|cm|cn|cp|cr|ct|
+                dj|dr|dz|fl|fr|gl|gr|
+                jb|jd|jg|jm|jv|kl|kr|
+                ml|mr|pl|pr|
+                sf|sk|sl|sm|sn|sp|sr|st|
+                tc|tr|ts|vl|vr|xl|xr|
+                zb|zd|zg|zm|zv)'''
     vv = r'(?:ai|ei|oi|au)'
-    rafsi3v = Template(r"(?:$cc$v|$c$vv|$c$v'$v)").substitute(locals())
-    rafsi3 = Template(r'(?:$rafsi3v|$c$v$c)').substitute(locals())
-    rafsi4 = Template(r'(?:$c$v$c$c|$cc$v$c)').substitute(locals())
-    rafsi5 = Template(r'$rafsi4$v').substitute(locals())
+    rafsi3v = r"(?:%(cc)s%(v)s|%(c)s%(vv)s|%(c)s%(v)s'%(v)s)" % locals()
+    rafsi3 = r'(?:%(rafsi3v)s|%(c)s%(v)s%(c)s)' % locals()
+    rafsi4 = r'(?:%(c)s%(v)s%(c)s%(c)s|%(cc)s%(v)s%(c)s)' % locals()
+    rafsi5 = r'%(rafsi4)s%(v)s' % locals()
     
     for i in xrange(1, len(compound)/3+1):
-        reg = Template(r'(?:($rafsi3)([nry])??|($rafsi4)(y))')
-        reg = reg.substitute(locals()) * i
-        reg2 = Template(r'^$reg($rafsi3v|$rafsi5)$$').substitute(locals())
-        matches = re.findall(reg2, compound)
+        reg = r'(?:(%(rafsi3)s)([nry])??|(%(rafsi4)s)(y))' % locals() * i
+        reg2 = r'^%(reg)s(%(rafsi3v)s|%(rafsi5)s)$$' % locals()
+        matches = re.findall(reg2, compound, re.VERBOSE)
         if matches:
             return [r for r in matches[0] if r]
     
