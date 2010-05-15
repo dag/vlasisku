@@ -3,8 +3,9 @@ from __future__ import with_statement
 
 from os.path import join, dirname
 import cPickle as pickle
-from models import Entry, Gloss
 from os import stat
+
+from models import Entry, Gloss
 
 
 try:

@@ -3,12 +3,14 @@
 
 from __future__ import with_statement
 
+import re
+
 from flask import Flask, request, redirect, send_file, Response, json, jsonify
+from stemming.porter2 import stem
+
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
 import dbpickler as db
 from render import Render
-import re
-from stemming.porter2 import stem
 
 
 app = Flask(__name__)

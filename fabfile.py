@@ -1,5 +1,8 @@
+
 from __future__ import with_statement
+
 from fabric.api import *
+
 
 env.hosts = ['lojban.org']
 appdir = '/home/dag/vlasisku'

@@ -1,10 +1,11 @@
 #-*- coding:utf-8 -*-
 
 import re
-from stemming.porter2 import stem
 from functools import wraps
-from flask import request, Response
 from contextlib import contextmanager
+
+from stemming.porter2 import stem
+from flask import request, Response
 
 
 def compound2affixes(compound):

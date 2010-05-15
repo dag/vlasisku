@@ -1,5 +1,6 @@
-from genshi.template import TemplateLoader
 from os.path import join, dirname
+
+from genshi.template import TemplateLoader
 
 
 class Render(object):
