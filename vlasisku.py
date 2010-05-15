@@ -5,7 +5,8 @@ from __future__ import with_statement
 
 import re
 
-from flask import Flask, request, redirect, send_file, Response, json, jsonify
+from flask import Flask, request, redirect, send_file, Response, \
+                  json, jsonify, url_for
 from stemming.porter2 import stem
 
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
@@ -135,7 +136,7 @@ def query(query):
     matches.update(notes)
     
     if not entry and len(matches) == 1:
-        return redirect(matches.pop())
+        return redirect(url_for('query', query=matches.pop()))
     
     sourcemetaphor = []
     unknownaffixes = None
