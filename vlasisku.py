@@ -17,12 +17,13 @@ from render import GenshiTemplater
 app = Flask(__name__)
 app.debug = __name__ == '__main__'
 app.jinja_env.auto_reload = app.debug
+app.etag = db.etag
 
 render = GenshiTemplater(app)
 
 
 @app.route('/')
-@etag(db.etag, app.debug)
+@etag(app)
 def index():
     showgrid = 'showgrid' in request.args
     if 'query' in request.args:
@@ -95,7 +96,7 @@ def json(entry):
 
 
 @app.route('/<query>')
-@etag(db.etag, app.debug)
+@etag(app)
 def query(query):
     showgrid = 'showgrid' in request.args
     query = query.decode('utf-8').replace('+', ' ')

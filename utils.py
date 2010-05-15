@@ -5,7 +5,7 @@ from functools import wraps
 from contextlib import contextmanager
 
 from stemming.porter2 import stem
-from flask import request, Response
+from flask import Response, request
 
 
 def compound2affixes(compound):
@@ -111,18 +111,16 @@ def add_stems(token, collection, item):
         collection[stemmed].append(item)
 
 
-def etag(tag, debug=False):
+def etag(app):
     """Decorator to add ETag handling to a callback."""
     def decorator(f):
         @wraps(f)
         def wrapper(**kwargs):
-            if not debug and request.environ.get('HTTP_IF_NONE_MATCH') == tag:
-                return Response(status=304)
-            response = f(**kwargs)
-            if isinstance(response, basestring):
-                return Response(response, headers={'ETag': tag})
-            else:
-                return response
+            response = app.make_response(f(**kwargs))
+            response.set_etag(app.etag)
+            if not app.debug:
+                response.make_conditional(request)
+            return response
         return wrapper
     return decorator
 
