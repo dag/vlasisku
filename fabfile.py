@@ -28,6 +28,10 @@ def installdeps():
     with cd(appdir):
         run('pip install -E %s -r requirements.txt' % virtenv)
 
+def updatedeps():
+    with cd(appdir):
+        run('pip install -E %s -r requirements.txt -u' % virtenv)
+
 def deploy():
     local('bzr push')
     pull()

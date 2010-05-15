@@ -3,7 +3,8 @@
 from string import Template
 import re
 from stemming.porter2 import stem
-from bottle import response, request, abort
+from functools import wraps
+from flask import request, Response
 from contextlib import contextmanager
 
 
@@ -103,13 +104,15 @@ def add_stems(token, collection, item):
 def etag(tag, debug=False):
     """Decorator to add ETag handling to a callback."""
     def decorator(f):
+        @wraps(f)
         def wrapper(**kwargs):
-            response.header['ETag'] = tag
-            if request.environ.get('HTTP_IF_NONE_MATCH', None) == tag:
-                if not debug:
-                    abort(304)
-                    return
-            return f(**kwargs)
+            if not debug and request.environ.get('HTTP_IF_NONE_MATCH') == tag:
+                return Response(status=304)
+            response = f(**kwargs)
+            if isinstance(response, basestring):
+                return Response(response, headers={'ETag': tag})
+            else:
+                return response
         return wrapper
     return decorator
 

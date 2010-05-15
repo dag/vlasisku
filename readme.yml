@@ -18,7 +18,7 @@ Installation for developers: |
     wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' -O data/jbovlaste.xml
     mkvirtualenv --no-site-packages vlasisku # Isolated Python environment
     pip install -r requirements.txt # Installs to that environment
-    ./vlasisku -dr
+    ./vlasisku
     deactivate # When finished
     workon vlasisku # To reactivate the environment
 
