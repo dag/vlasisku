@@ -1,6 +1,5 @@
-import os.path
 
-from genshi.template import TemplateLoader
+from genshi.template import TemplateLoader, loader
 
 
 class GenshiTemplater(object):
@@ -10,7 +9,7 @@ class GenshiTemplater(object):
         based on your Flask app configuration.
         
         """
-        path = os.path.join(app.root_path, app.jinja_env.loader.package_path)
+        path = loader.package(app.import_name, 'templates')
         auto_reload = app.jinja_env.auto_reload
         self.loader = TemplateLoader(path, auto_reload=auto_reload)
         self.app = app
