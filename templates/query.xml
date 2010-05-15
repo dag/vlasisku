@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  <xi:include href="layout.xml"/>
+  <head>
+    <title>$query</title>
+  </head>
+  <body>
+    <div id="matches">
+      <ol>
+        <li py:if="glosses"><a href="#gloss">${len(glosses)} matched gloss</a></li>
+        <li py:if="affix"><a href="#affix">${len(affix)} matched affix</a></li>
+        <li py:if="classes"><a href="#class">${len(classes)} matched grammatical class</a></li>
+        <li py:if="types"><a href="#type">${len(types)} matched type</a></li>
+        <li py:if="definitions"><a href="#definition">${len(definitions)} matched definition</a></li>
+        <li py:if="notes"><a href="#notes">${len(notes)} matched notes</a></li>
+      </ol>
+    </div>
+
+    <p py:if="not matches" class="error">I couldn't find you anything, sorry!</p>
+
+    <p py:if="similar">
+      <strong>Did you mean…</strong>
+      <![CDATA[ ${', '.join('<a href="%s">%s</a>' % (s, s) for s in similar)} ]]>
+    </p>
+
+    <p py:if="unknownaffixes" class="error">Compound built with unknown affixes.</p>
+
+    <xi:include href="entrylist.xml" py:with="entries=sourcemetaphor; id='source'; title='This nonce compound is composed of:'"/>
+
+    <div py:if="entry" id="entry">
+      <h1>
+        ${Markup(entry.components() or entry)}
+
+        <sub py:if="entry.grammarclass">
+          <py:for each="grammarclass in entry.terminates">
+            <a href="$grammarclass">$grammarclass</a>…
+          </py:for>
+
+          <a href="$entry.grammarclass">$entry.grammarclass</a>
+
+          <py:if test="entry.terminator">
+            …<a href="$entry.terminator">$entry.terminator</a>
+          </py:if>
+        </sub>
+
+        <span py:if="entry.affixes" class="affixes">
+          <span py:def="hyphen()" class="hyphen">-</span>
+          ${hyphen()}<py:for each="a in entry.affixes">$a${hyphen()}</py:for>
+        </span>
+
+        <span class="type">$entry.type</span>
+      </h1>
+
+      <p class="definition">${Markup(entry.definition)}</p>
+      <p py:if="entry.notes" class="notes">${Markup(entry.notes)}</p>
+
+      <ul class="links">
+        <li py:for="section, link in entry.cll">
+          <a href="$link" title="Relevant section in the reference grammar.">CLL $section</a>
+        </li>
+        <li><a href="http://jbovlaste.lojban.org/dict/$entry" title="This entry in the dictonary editor.">jbovlaste</a></li>
+      </ul>
+      <hr/>
+    </div>
+
+    <div py:if="glosses" id="gloss">
+      <h2>These entries matched gloss:</h2>
+      <dl>
+        <py:for each="gloss in glosses">
+          <dt>
+            <a href="$gloss.entry">$gloss.entry</a>
+            <py:if test="gloss.sense">in sense "$gloss.sense"</py:if>
+            <py:if test="gloss.place">on place $gloss.place</py:if>
+          </dt>
+          <dd>${Markup(gloss.entry.definition)}</dd>
+        </py:for>
+      </dl>
+      <hr/>
+    </div>
+
+    <xi:include href="entrylist.xml" py:with="entries=affix; id='affix'; title='This entry matched affix form:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=classes; id='class'; title='These entries matched grammatical class:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=types; id='type'; title='These entries matched type:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=definitions; id='definition'; title='These entries matched definition:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=notes; id='notes'; title='These entries matched notes:'"/>
+  </body>
+</html>

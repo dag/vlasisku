@@ -1,5 +1,8 @@
+
 from __future__ import with_statement
+
 from fabric.api import *
+
 
 env.hosts = ['lojban.org']
 appdir = '/home/dag/vlasisku'
@@ -32,6 +35,10 @@ def pull():
 def installdeps():
     with cd(appdir):
         run('pip install -E %s -r requirements.txt' % virtenv)
+
+def updatedeps():
+    with cd(appdir):
+        run('pip install -E %s -r requirements.txt -u' % virtenv)
 
 def deploy():
     local('bzr push')

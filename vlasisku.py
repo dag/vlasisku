@@ -3,26 +3,31 @@
 
 from __future__ import with_statement
 
-from bottle import route, view, request, redirect, response, abort, send_file
-from utils import etag, ignore, compound2affixes, dameraulevenshtein
-import dbpickler as db
-from os.path import join, dirname
-from simplejson import dumps
 import re
+
+from flask import Flask, request, redirect, send_file, Response, \
+                  json, jsonify, url_for
 from stemming.porter2 import stem
 
+from utils import etag, ignore, compound2affixes, dameraulevenshtein
+import dbpickler as db
+from render import GenshiTemplater
 
-DEBUG = __name__ == '__main__'
+
+app = Flask(__name__)
+app.debug = __name__ == '__main__'
+app.jinja_env.auto_reload = app.debug
+app.etag = db.etag
+
+render = GenshiTemplater(app)
 
 
-@route('/')
-@view('index')
-@etag(db.etag, DEBUG)
+@app.route('/')
+@etag(app)
 def index():
-    showgrid = 'showgrid' in request.GET
-    if 'query' in request.GET:
-        redirect(request.GET['query'])
-        return
+    showgrid = 'showgrid' in request.args
+    if 'query' in request.args:
+        return redirect(request.args.get('query'))
     types = (('gismu', 'Root words.'),
              ('cmavo', 'Particles.'),
              ('cmavo cluster', 'Particle combinations.'),
@@ -34,27 +39,22 @@ def index():
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales
-    return locals()
+    return render.html('index.xml', locals())
 
 
-@route('/(?P<filename>favicon\.ico)')
-@route('/static/:filename#.+#')
-def static(filename):
-    send_file(filename, root=join(dirname(__file__), 'static'))
+@app.route('/favicon.ico')
+def favicon():
+    return send_file('static/favicon.ico', 'image/x-icon')
 
 
-@route('/opensearch/')
-@view('opensearch')
+@app.route('/opensearch/')
 def opensearch():
-    response.content_type = 'application/xml'
-    hostname = request.environ['HTTP_HOST']
-    path = request.environ.get('REQUEST_URI', '/opensearch/')
-    path = path.rpartition('opensearch/')[0]
-    return locals()
+    return Response(render.xml('opensearch.xml'), mimetype='application/xml')
 
-@route('/suggest/:prefix#.*#')
-def suggest(prefix):
-    prefix = request.GET.get('q', prefix.replace('+', ' ')).decode('utf-8')
+@app.route('/suggest/')
+@app.route('/suggest/<prefix>')
+def suggest(prefix=''):
+    prefix = request.args.get('q', prefix.replace('+', ' ')).decode('utf-8')
     suggestions = []
     types = []
     entries = (e for e in db.entries.iterkeys()
@@ -74,14 +74,14 @@ def suggest(prefix):
         with ignore(KeyError):
             suggestions.append(classes.pop())
             types.append('class')
-    if 'q' in request.GET:
+    if 'q' in request.args:
         return '\n'.join(suggestions)
     else:
-        response.content_type = 'application/json'
-        return dumps([prefix, suggestions, types])
+        return Response(json.dumps([prefix, suggestions, types]),
+                        mimetype='application/json')
 
 
-@route('/json/:entry')
+@app.route('/json/<entry>')
 def json(entry):
     if entry in db.entries:
         entry = db.entries[entry]
@@ -92,14 +92,13 @@ def json(entry):
         definition = entry.definition
         notes = entry.notes
         del entry
-        return locals()
+        return jsonify(locals())
 
 
-@route('/:query#.*#')
-@view('query')
-@etag(db.etag, DEBUG)
+@app.route('/<query>')
+@etag(app)
 def query(query):
-    showgrid = 'showgrid' in request.GET
+    showgrid = 'showgrid' in request.args
     query = query.decode('utf-8').replace('+', ' ')
     querystem = stem(query.lower())
     matches = set()
@@ -136,8 +135,7 @@ def query(query):
     matches.update(notes)
     
     if not entry and len(matches) == 1:
-        redirect(matches.pop())
-        return
+        return redirect(url_for('query', query=matches.pop()))
     
     sourcemetaphor = []
     unknownaffixes = None
@@ -160,11 +158,9 @@ def query(query):
                             and g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
     
-    return locals()
+    return render.html('query.xml', locals())
 
 
 if __name__ == '__main__':
-    import bottle
-    bottle.debug(True)
-    bottle.run(port=8080, reloader=True)
+    app.run()
 

@@ -3,7 +3,5 @@
 import os
 os.chdir(os.path.dirname(__file__))
 
-import bottle
-import vlasisku
-application = bottle.default_app()
+from vlasisku import app as application
 

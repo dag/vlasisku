@@ -2,14 +2,16 @@
 
 from __future__ import with_statement
 
-from ordereddict import OrderedDict
 from os.path import join, dirname
-import yaml
-from models import Entry, Gloss
 import xml.etree.cElementTree as ElementTree
-from utils import tex2html, braces2links, add_stems
 from os import stat
 import re
+
+from ordereddict import OrderedDict
+import yaml
+
+from models import Entry, Gloss
+from utils import tex2html, braces2links, add_stems
 
 
 entries = OrderedDict()

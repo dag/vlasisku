@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:py="http://genshi.edgewall.org/">
+  <xi:include href="layout.xml"/>
+  <head/>
+  <body>
+    <div id="types" class="span-6">
+      <h2>Types</h2>
+      <dl>
+        <py:for each="type, definition in types">
+          <dt><a href="$type">$type</a></dt>
+          <dd>$definition</dd>
+        </py:for>
+      </dl>
+    </div>
+
+    <div id="classes" class="span-18 last">
+      <h2>Grammatical classes</h2>
+      <p>
+        <py:for each="grammarclass in sorted(classes)"
+                py:with="scale = scales.get(grammarclass, 0.7)">
+          <a href="$grammarclass"
+             style="font-size: ${scale}em"
+             class="${'loud' if scale >= 1 else 'quiet'}">$grammarclass</a>
+        </py:for>
+      </p>
+    </div>
+  </body>
+</html>

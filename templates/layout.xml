@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/" py:strip="">
+  <py:match path="head" once="true">
+    <head>
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+      <title py:with="title=list(select('title/text()'))">
+        <py:if test="title">$title - </py:if>vlasisku
+      </title>
+      <link rel="shortcut icon" href="static/favicon-16.png"/>
+      <link rel="stylesheet" href="static/blueprint/screen.css" type="text/css" media="screen, projection"/>
+      <link rel="stylesheet" href="static/blueprint/print.css" type="text/css" media="print"/>
+      <!--[if lt IE 8]><link rel="stylesheet" href="static/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+      <link rel="stylesheet" href="static/tipTip.css" type="text/css" media="screen, projection, print"/>
+      <link rel="stylesheet" href="static/jquery.autocomplete.css" type="text/css" media="screen, projection, print"/>
+      <link rel="stylesheet" href="static/custom.css" type="text/css" media="screen, projection, print"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="opensearch/" title="Lojban dictionary"/>
+      <script type="text/javascript" src="static/jquery-1.4.2.min.js"/>
+      <script type="text/javascript" src="static/jquery.tipTip.minified.js"/>
+      <script type="text/javascript" src="static/jquery.autocomplete.pack.js"/>
+      <script type="text/javascript" src="static/custom.js"/>
+    </head>
+  </py:match>
+
+  <py:match path="body" once="true">
+    <body py:attrs="select('@*')">
+      <div class="container${' showgrid' if showgrid else ''}">
+        <div id="nav" class="span-6">
+          <ol>
+            <li><a href="./" rel="index" accesskey="h">Home</a></li>
+            <li><a href="https://bugs.launchpad.net/vlasisku/+filebug" title="Found a bug? Report it!" accesskey="b">Bugs</a></li>
+          </ol>
+        </div>
+
+        <div class="span-18 last">
+          <form action="/" method="get" onsubmit="return search();" id="search" class="inline">
+            <p>
+              <input type="text" value="${value_of('query', '').encode('utf-8')}" size="30" id="query" name="query" accesskey="f" onfocus="this.select()"/>
+              <button type="submit"><img src="static/favicon-16.png" alt=""/> Find!</button>
+            </p>
+          </form>
+        </div>
+
+        <div class="clear"></div>
+        ${select('*|text()')}
+      </div>
+    </body>
+  </py:match>
+</html>
