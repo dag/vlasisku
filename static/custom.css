@@ -1,104 +1,120 @@
 .container {
-    font-size: 150%;
-    margin-top: 2em;
+  font-size  : 150%;
+  margin-top : 2em;
 }
+
+/*****************************************************************************/
 
 #nav ol {
-    list-style-type: none;
-    padding-left: 0;
+  list-style-type : none;
+  padding-left    : 0;
 }
 #nav li {
-    padding-right: 1em;
-    display: inline;
-    font-weight: bold;
+  padding-right   : 1em;
+  display         : inline;
+  font-weight     : bold;
 }
+
+/*****************************************************************************/
 
 #search {
-    text-align: right;
+  text-align     : right;
 }
-#search input, button {
-    font-size: 16px;
+#search input,
+#search button {
+  font-size      : 16px;
 }
+
+/*****************************************************************************/
 
 #matches {
-    text-align: right;
+  text-align      : right;
 }
 #matches ol {
-    list-style-type: none;
-    margin-right: 0;
+  list-style-type : none;
+  margin-right    : 0;
 }
 #matches li {
-    margin-left: 1em;
-    display: inline;
+  margin-left     : 1em;
+  display         : inline;
 }
+
+/*****************************************************************************/
 
 #classes p {
-    text-align: justify;
-    word-spacing: 0.6em;
+  text-align      : justify;
+  word-spacing    : 0.6em;
 }
 #classes a {
-    text-decoration: none;
-    vertical-align: middle;
-    line-height: 0.8;
+  text-decoration : none;
+  vertical-align  : middle;
+  line-height     : 0.8;
 }
+
+/*****************************************************************************/
 
 #entry .affixes {
-    font-size: smaller;
+  font-size               : smaller;
 }
 #entry .affixes .hyphen {
-    color: #bbb;
+  color                   : #bbb;
 }
 #entry .type {
-    float: right;
-    font-size: smaller;
+  float                   : right;
+  font-size               : smaller;
 }
 #entry .definition {
-    font-size: 120%;
-    white-space: pre-wrap;
+  font-size               : 120%;
+  white-space             : pre-wrap;
 }
 #entry .notes {
-    font-style: italic;
+  font-style              : italic;
 }
 #entry .notes em {
-    font-style: normal;
+  font-style              : normal;
 }
-.missing {
-    color: #900;
+#entry .missing {
+  color                   : #900;
 }
 #entry .links {
-    text-align: right;
-    margin-right: 0;
+  text-align              : right;
+  margin-right            : 0;
 }
 #entry .links ul {
-    list-style-type: none;
+  list-style-type         : none;
 }
 #entry .links li {
-    display: inline;
-    margin-left: 1em;
+  display                 : inline;
+  margin-left             : 1em;
 }
 
+/*****************************************************************************/
+
 hr {
-    height: 1px;
+  height      : 1px;
 }
 
 h2 {
-    font-size: 140%;
+  font-size   : 140%;
 }
 
 dd {
-    white-space: pre-wrap;
+  white-space : pre-wrap;
 }
 
-a[href^="http:"], a[href^="https:"] {
-  padding:2px 16px 2px 0;
-  margin:-2px 0;
-  background-repeat: no-repeat;
-  background-position: right center;
-  background-image: url(blueprint/plugins/link-icons/icons/external.png);
+/*****************************************************************************/
+
+a[href^="http:"],
+a[href^="https:"] {
+  padding             : 2px 16px 2px 0;
+  margin              : -2px 0;
+  background-repeat   : no-repeat;
+  background-position : right center;
+  background-image    : url(blueprint/plugins/link-icons/icons/external.png);
 }
 
 #tiptip_content {
-    font-size: 1.3em;
-    white-space: pre-wrap;
+  font-size   : 1.3em;
+  white-space : pre-wrap;
 }
 
