@@ -81,20 +81,6 @@ def suggest(prefix=''):
                         mimetype='application/json')
 
 
-@app.route('/json/<entry>')
-def json(entry):
-    if entry in db.entries:
-        entry = db.entries[entry]
-        word = entry.word
-        type = entry.type
-        affixes = entry.affixes
-        grammarclass = entry.grammarclass
-        definition = entry.definition
-        notes = entry.notes
-        del entry
-        return jsonify(locals())
-
-
 @app.route('/<query>')
 @etag(app)
 def query(query):
