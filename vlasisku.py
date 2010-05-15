@@ -11,12 +11,14 @@ from stemming.porter2 import stem
 
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
 import dbpickler as db
-from render import Render
+from render import GenshiTemplater
 
 
 app = Flask(__name__)
 app.debug = __name__ == '__main__'
-render = Render(app.debug)
+app.jinja_env.auto_reload = app.debug
+
+render = GenshiTemplater(app)
 
 
 @app.route('/')
@@ -36,7 +38,7 @@ def index():
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales
-    return render.html('index', locals())
+    return render.html('index.xml', locals())
 
 
 @app.route('/favicon.ico')
@@ -46,11 +48,7 @@ def favicon():
 
 @app.route('/opensearch/')
 def opensearch():
-    hostname = request.environ['HTTP_HOST']
-    path = request.environ.get('REQUEST_URI', '/opensearch/')
-    path = path.rpartition('opensearch/')[0]
-    return Response(render.xml('opensearch', locals()),
-                    mimetype='application/xml')
+    return Response(render.xml('opensearch.xml'), mimetype='application/xml')
 
 @app.route('/suggest/')
 @app.route('/suggest/<prefix>')
@@ -159,7 +157,7 @@ def query(query):
                             and g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
     
-    return render.html('query', locals())
+    return render.html('query.xml', locals())
 
 
 if __name__ == '__main__':
