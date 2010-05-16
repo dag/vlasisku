@@ -9,12 +9,14 @@ from flask import Flask, request, redirect, send_file, Response, \
                   json, jsonify, url_for
 from stemming.porter2 import stem
 
+from db import DB, TYPES
 from utils import etag, ignore, compound2affixes, dameraulevenshtein
-import dbpickler as db
 from render import GenshiTemplater
 
 
 app = Flask(__name__)
+db = DB.load(app.root_path)
+
 app.debug = __name__ == '__main__'
 app.jinja_env.auto_reload = app.debug
 app.etag = db.etag
@@ -28,14 +30,7 @@ def index():
     showgrid = 'showgrid' in request.args
     if 'query' in request.args:
         return redirect(request.args.get('query'))
-    types = (('gismu', 'Root words.'),
-             ('cmavo', 'Particles.'),
-             ('cmavo cluster', 'Particle combinations.'),
-             ('lujvo', 'Compound words.'),
-             ("fu'ivla", 'Loan words.'),
-             ('experimental gismu', 'Non-standard root words.'),
-             ('experimental cmavo', 'Non-standard particles.'),
-             ('cmene', 'Names.'))
+    types = TYPES
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales

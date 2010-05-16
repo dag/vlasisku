@@ -4,8 +4,14 @@ import re
 from functools import wraps
 from contextlib import contextmanager
 
+import yaml
 from stemming.porter2 import stem
 from flask import Response, request
+
+
+def load_yaml(filename):
+    with open(filename) as f:
+        return yaml.load(f)
 
 
 def compound2affixes(compound):

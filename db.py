@@ -1,100 +1,180 @@
-#-*- coding:utf-8 -*-
 
 from __future__ import with_statement
 
-from os.path import join, dirname
+from os.path import join, getmtime
+import cPickle as pickle
 import xml.etree.cElementTree as ElementTree
-from os import stat
 import re
 
 from ordereddict import OrderedDict
 import yaml
 
 from models import Entry, Gloss
-from utils import tex2html, braces2links, add_stems
+from utils import load_yaml, tex2html, add_stems, braces2links
 
 
-entries = OrderedDict()
-glosses = []
-definition_stems = {}
-note_stems = {}
-gloss_stems = {}
-
-with open(join(dirname(__file__), 'data', 'class-scales.yml')) as f:
-    class_scales = yaml.load(f)
-
-with open(join(dirname(__file__), 'data', 'cll.yml')) as f:
-    cll = yaml.load(f)
-
-with open(join(dirname(__file__), 'data', 'terminators.yml')) as f:
-    terminators = yaml.load(f)
+TYPES = (('gismu', 'Root words.'),
+         ('cmavo', 'Particles.'),
+         ('cmavo cluster', 'Particle combinations.'),
+         ('lujvo', 'Compound words.'),
+         ("fu'ivla", 'Loan words.'),
+         ('experimental gismu', 'Non-standard root words.'),
+         ('experimental cmavo', 'Non-standard particles.'),
+         ('cmene', 'Names.'))
 
 
-jbovlaste = ElementTree.parse(join(dirname(__file__), 'data', 'jbovlaste.xml'))
-types = ('gismu', 'cmavo', 'cmavo cluster', 'lujvo', "fu'ivla",
-         'experimental gismu', 'experimental cmavo', 'cmene')
+class DB(object):
+    """Container for all the processed data.
 
-for type in types:
-    for valsi in jbovlaste.findall('//valsi'):
-        if valsi.get('type') == type:
-            entry = Entry()
-            entry.type = type
-            entry.word = valsi.get('word')
+    Attributes:
 
-            if type in ('gismu', 'experimental gismu'):
-                entry.searchaffixes.append(entry.word)
-                entry.searchaffixes.append(entry.word[0:4])
-            
-            for child in valsi.getchildren():
-                text = child.text
-                
-                if child.tag == 'rafsi':
-                    entry.affixes.append(text)
-                    entry.searchaffixes.append(text)
-                
-                elif child.tag == 'selmaho':
-                    entry.grammarclass = text
-                    for grammarclass, terminator in terminators.iteritems():
-                        if text == grammarclass:
-                            entry.terminator = terminator
-                        if text == terminator:
-                            entry.terminates.append(grammarclass)
-                    if text in cll:
-                        for path in cll[text]:
-                            section = '%s.%s' % tuple(path)
-                            link = 'http://dag.github.com/cll/%s/%s/'
-                            entry.cll.append((section, link % tuple(path)))
-                
-                elif child.tag == 'definition':
-                    entry.definition = tex2html(text)
-                    for token in set(re.findall(r"[\w']+", text, re.UNICODE)):
-                        add_stems(token, definition_stems, entry)
-                
-                elif child.tag == 'notes':
-                    entry.notes = tex2html(text)
-                    for token in set(re.findall(r"[\w']+", text, re.UNICODE)):
-                        add_stems(token, note_stems, entry)
-            
-            entries[entry.word] = entry
+    entries
+        An OrderedDict mapping entry names to Entry instances.
+    glosses
+        A list of Gloss instances.
+    definition_stems
+        A dict mapping stems in definitions to lists of Entry instances.
+    note_stems
+        A dict mapping stems in notes to lists of Entry instances.
+    gloss_stems
+        A dict mapping the stem of glosses to lists of Entry instances.
+    class_scales
+        A dict mapping grammatical classes to font sizes in ems.
+    cll
+        A dict mapping grammatical classes to lists
+        of ``[chapter, section]`` lists.
+    terminators
+        A dict mapping grammatical classes to terminating grammatical classes.
+    etag
+        A string that changes if the database changes.
 
-for entry in entries.itervalues():
-    if entry.notes:
-        entry.notes = braces2links(entry.notes, entries)
+    """
 
-for type in types:
-    for word in jbovlaste.findall('//nlword'):
-        entry = entries[word.get('valsi')]
-        if entry.type == type:
-            gloss = Gloss()
-            gloss.gloss = word.get('word')
-            gloss.entry = entry
-            if word.get('sense'):
-                gloss.sense = word.get('sense')
-            if word.get('place'):
-                gloss.place = word.get('place')
-            glosses.append(gloss)
-            add_stems(gloss.gloss, gloss_stems, gloss)
+    entries = None
+    glosses = None
+    definition_stems = None
+    note_stems = None
+    gloss_stems = None
+    class_scales = None
+    cll = None
+    terminators = None
+    etag = None
+
+    @classmethod
+    def load(cls, root_path='./', cache='data/db.pickle', **kwargs):
+        """Try to load a cached database, fall back on building a new one.
+
+        ``kwargs`` are passed to :meth:`__init__`.
+
+        """
+        try:
+            with open(join(root_path, cache)) as f:
+                db = pickle.load(f)
+            db.etag = str(getmtime(join(root_path, cache)))
+        except IOError:
+            db = cls(root_path, **kwargs)
+            with open(join(root_path, cache), 'w') as f:
+                pickle.dump(db, f, pickle.HIGHEST_PROTOCOL)
+        return db
 
 
-etag = str(stat(join(dirname(__file__), 'data', 'jbovlaste.xml')).st_mtime)
+    def __init__(self, root_path='./',
+                 jbovlaste='data/jbovlaste.xml',
+                 class_scales='data/class-scales.yml',
+                 cll='data/cll.yml',
+                 terminators='data/terminators.yml'):
+        """Build a database from the data files."""
+
+        self.class_scales = load_yaml(join(root_path, class_scales))
+        self.cll = load_yaml(join(root_path, cll))
+        self.terminators = load_yaml(join(root_path, terminators))
+
+        with open(join(root_path, jbovlaste)) as f:
+            xml = ElementTree.parse(f)
+            self._load_entries(xml)
+            self._load_glosses(xml)
+
+        self.etag = str(getmtime(join(root_path, jbovlaste)))
+
+
+    def _load_entries(self, xml):
+        self.entries = OrderedDict()
+        self.definition_stems = {}
+        self.note_stems = {}
+        for type, _ in TYPES:
+            for valsi in xml.findall('//valsi'):
+                if valsi.get('type') == type:
+                    entry = Entry(self)
+                    entry.type = type
+                    entry.word = valsi.get('word')
+
+                    if type in ('gismu', 'experimental gismu'):
+                        entry.searchaffixes.append(entry.word)
+                        entry.searchaffixes.append(entry.word[0:4])
+
+                    for child in valsi.getchildren():
+                        tag, text = child.tag, child.text
+
+                        if tag == 'rafsi':
+                            entry.affixes.append(text)
+                            entry.searchaffixes.append(text)
+
+                        elif tag == 'selmaho':
+                            self._process_selmaho(entry, text)
+
+                        elif tag == 'definition':
+                            entry.definition = tex2html(text)
+                            tokens = re.findall(r"[\w']+", text, re.UNICODE)
+                            for token in set(tokens):
+                                add_stems(token, self.definition_stems, entry)
+
+                        elif tag == 'notes':
+                            entry.notes = tex2html(text)
+                            tokens = re.findall(r"[\w']+", text, re.UNICODE)
+                            for token in set(tokens):
+                                add_stems(token, self.note_stems, entry)
+
+                    self.entries[entry.word] = entry
+
+        for entry in self.entries.itervalues():
+            if entry.notes:
+                entry.notes = braces2links(entry.notes, self.entries)
+
+
+    def _process_selmaho(self, entry, text):
+        entry.grammarclass = text
+
+        for grammarclass, terminator in self.terminators.iteritems():
+            if text == grammarclass:
+                entry.terminator = terminator
+            if text == terminator:
+                entry.terminates.append(grammarclass)
+
+        if text in self.cll:
+            for path in self.cll[text]:
+                section = '%s.%s' % tuple(path)
+                link = 'http://dag.github.com/cll/%s/%s/'
+                entry.cll.append((section, link % tuple(path)))
+
+
+    def _load_glosses(self, xml):
+        self.glosses = []
+        self.gloss_stems = {}
+        for type, _ in TYPES:
+            for word in xml.findall('//nlword'):
+                entry = self.entries[word.get('valsi')]
+
+                if entry.type == type:
+                    gloss = Gloss()
+                    gloss.gloss = word.get('word')
+                    gloss.entry = entry
+
+                    if word.get('sense'):
+                        gloss.sense = word.get('sense')
+
+                    if word.get('place'):
+                        gloss.place = word.get('place')
+
+                    self.glosses.append(gloss)
+                    add_stems(gloss.gloss, self.gloss_stems, gloss)
 
