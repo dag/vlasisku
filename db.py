@@ -163,18 +163,12 @@ class DB(object):
         for type, _ in TYPES:
             for word in xml.findall('//nlword'):
                 entry = self.entries[word.get('valsi')]
-
                 if entry.type == type:
                     gloss = Gloss()
                     gloss.gloss = word.get('word')
                     gloss.entry = entry
-
-                    if word.get('sense'):
-                        gloss.sense = word.get('sense')
-
-                    if word.get('place'):
-                        gloss.place = word.get('place')
-
+                    gloss.sense = word.get('sense')
+                    gloss.place = word.get('place')
                     self.glosses.append(gloss)
                     add_stems(gloss.gloss, self.gloss_stems, gloss)
 
