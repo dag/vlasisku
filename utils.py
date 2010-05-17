@@ -83,18 +83,7 @@ def tex2html(tex):
     return tex
 
 def braces2links(text, entries):
-    """Turns {quoted words} into HTML links.
-    
-    >>> import db
-    >>> braces2links('See also {mupli}.', db.entries)
-    u'See also <a href="mupli" title="x<sub>1</sub> is
-    an example/sample/specimen/instance/case/illustration of
-    common property(s) x<sub>2</sub> of set x<sub>3</sub>.">mupli</a>.'
-    >>> braces2links('See also {missing}.', db.entries)
-    u'See also <a
-    href="http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=missing"
-    title="This word is missing, please add it!" class="missing">missing</a>.'
-    """
+    """Turns {quoted words} into HTML links."""
     def f(m):
         try:
             values = (m.group(1), entries[m.group(1)].definition, m.group(1))
@@ -102,7 +91,7 @@ def braces2links(text, entries):
         except KeyError:
             link = u'<a href="http://jbovlaste.lojban.org' \
                     '/dict/addvalsi.html?valsi=%s" ' \
-                    'title="This word is missing, please add it!"' \
+                    'title="This word is missing, please add it!" ' \
                     'class="missing">%s</a>'
             return link % (m.group(1), m.group(1))
     return re.sub(r'\{(.+?)\}', f, text)
@@ -184,9 +173,4 @@ def dameraulevenshtein(seq1, seq2):
                 and seq1[x-1] == seq2[y] and seq1[x] != seq2[y]):
                 thisrow[y] = min(thisrow[y], twoago[y - 2] + 1)
     return thisrow[len(seq2) - 1]
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
