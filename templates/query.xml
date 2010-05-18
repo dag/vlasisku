@@ -10,12 +10,12 @@
   <body>
     <div id="matches">
       <ol>
-        <li py:if="glosses"><a href="#gloss">${len(glosses)} matched gloss</a></li>
-        <li py:if="affix"><a href="#affix">${len(affix)} matched affix</a></li>
-        <li py:if="classes"><a href="#class">${len(classes)} matched grammatical class</a></li>
-        <li py:if="types"><a href="#type">${len(types)} matched type</a></li>
-        <li py:if="definitions"><a href="#definition">${len(definitions)} matched definition</a></li>
-        <li py:if="notes"><a href="#notes">${len(notes)} matched notes</a></li>
+        <li py:if="glosses"><a href="#gloss">${len(glosses)} on gloss</a></li>
+        <li py:if="affix"><a href="#affix">${len(affix)} on affix</a></li>
+        <li py:if="classes"><a href="#class">${len(classes)} on class</a></li>
+        <li py:if="types"><a href="#type">${len(types)} on type</a></li>
+        <li py:if="definitions"><a href="#definition">${len(definitions)} in definition</a></li>
+        <li py:if="notes"><a href="#notes">${len(notes)} in notes</a></li>
       </ol>
     </div>
 
@@ -28,7 +28,7 @@
 
     <p py:if="unknownaffixes" class="error">Compound built with unknown affixes.</p>
 
-    <xi:include href="entrylist.xml" py:with="entries=sourcemetaphor; id='source'; title='This nonce compound is composed of:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=sourcemetaphor; id='source'; title='Components in this compound:'"/>
 
     <div py:if="entry" id="entry">
       <h1>
@@ -67,7 +67,7 @@
     </div>
 
     <div py:if="glosses" id="gloss">
-      <h2>These entries matched gloss:</h2>
+      <h2>On gloss:</h2>
       <dl>
         <py:for each="gloss in glosses">
           <dt>
@@ -81,10 +81,10 @@
       <hr/>
     </div>
 
-    <xi:include href="entrylist.xml" py:with="entries=affix; id='affix'; title='This entry matched affix form:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=classes; id='class'; title='These entries matched grammatical class:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=types; id='type'; title='These entries matched type:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=definitions; id='definition'; title='These entries matched definition:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=notes; id='notes'; title='These entries matched notes:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=affix; id='affix'; title='On affix form:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=classes; id='class'; title='On grammatical class:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=types; id='type'; title='On type:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=definitions; id='definition'; title='In definition:'"/>
+    <xi:include href="entrylist.xml" py:with="entries=notes; id='notes'; title='In notes:'"/>
   </body>
 </html>
