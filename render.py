@@ -18,6 +18,8 @@ class GenshiTemplater(object):
         """Render a template, by default as HTML."""
         tmpl = self.loader.load(template)
         context.update(self.app.jinja_env.globals)
+        if not doctype:
+            return tmpl.generate(**context).render(serializer)
         return tmpl.generate(**context).render(serializer, doctype=doctype)
 
     def html(self, template, context={}):
