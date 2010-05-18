@@ -98,9 +98,15 @@ class DB(object):
 
 
     def _load_entries(self, xml):
+        processors = {'rafsi': self._process_rafsi,
+                      'selmaho': self._process_selmaho,
+                      'definition': self._process_definition,
+                      'notes': self._process_notes}
+
         self.entries = OrderedDict()
         self.definition_stems = {}
         self.note_stems = {}
+
         for type, _ in TYPES:
             for valsi in xml.findall('//valsi'):
                 if valsi.get('type') == type:
@@ -114,25 +120,7 @@ class DB(object):
 
                     for child in valsi.getchildren():
                         tag, text = child.tag, child.text
-
-                        if tag == 'rafsi':
-                            entry.affixes.append(text)
-                            entry.searchaffixes.append(text)
-
-                        elif tag == 'selmaho':
-                            self._process_selmaho(entry, text)
-
-                        elif tag == 'definition':
-                            entry.definition = tex2html(text)
-                            tokens = re.findall(r"[\w']+", text, re.UNICODE)
-                            for token in set(tokens):
-                                add_stems(token, self.definition_stems, entry)
-
-                        elif tag == 'notes':
-                            entry.notes = tex2html(text)
-                            tokens = re.findall(r"[\w']+", text, re.UNICODE)
-                            for token in set(tokens):
-                                add_stems(token, self.note_stems, entry)
+                        processors.get(tag, lambda: None)(entry, text)
 
                     self.entries[entry.word] = entry
 
@@ -141,20 +129,34 @@ class DB(object):
                 entry.notes = braces2links(entry.notes, self.entries)
 
 
+    def _process_rafsi(self, entry, text):
+        entry.affixes.append(text)
+        entry.searchaffixes.append(text)
+
     def _process_selmaho(self, entry, text):
         entry.grammarclass = text
-
         for grammarclass, terminator in self.terminators.iteritems():
             if text == grammarclass:
                 entry.terminator = terminator
             if text == terminator:
                 entry.terminates.append(grammarclass)
-
         if text in self.cll:
             for path in self.cll[text]:
                 section = '%s.%s' % tuple(path)
                 link = 'http://dag.github.com/cll/%s/%s/'
                 entry.cll.append((section, link % tuple(path)))
+
+    def _process_definition(self, entry, text):
+        entry.definition = tex2html(text)
+        tokens = re.findall(r"[\w']+", text, re.UNICODE)
+        for token in set(tokens):
+            add_stems(token, self.definition_stems, entry)
+
+    def _process_notes(self, entry, text):
+        entry.notes = tex2html(text)
+        tokens = re.findall(r"[\w']+", text, re.UNICODE)
+        for token in set(tokens):
+            add_stems(token, self.note_stems, entry)
 
 
     def _load_glosses(self, xml):
