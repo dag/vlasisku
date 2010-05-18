@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 import yaml
 from stemming.porter2 import stem
-from flask import Response, request
+from flask import current_app, request
 
 
 def load_yaml(filename):
@@ -105,18 +105,16 @@ def add_stems(token, collection, item):
         collection[stemmed].append(item)
 
 
-def etag(app):
+def etag(f):
     """Decorator to add ETag handling to a callback."""
-    def decorator(f):
-        @wraps(f)
-        def wrapper(**kwargs):
-            response = app.make_response(f(**kwargs))
-            response.set_etag(app.etag)
-            if not app.debug:
-                response.make_conditional(request)
-            return response
-        return wrapper
-    return decorator
+    @wraps(f)
+    def wrapper(**kwargs):
+        response = current_app.make_response(f(**kwargs))
+        response.set_etag(current_app.etag)
+        if not current_app.debug:
+            response.make_conditional(request)
+        return response
+    return wrapper
 
 
 @contextmanager

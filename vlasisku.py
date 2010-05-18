@@ -25,7 +25,7 @@ render = GenshiTemplater(app)
 
 
 @app.route('/')
-@etag(app)
+@etag
 def index():
     showgrid = 'showgrid' in request.args
     if 'query' in request.args:
@@ -77,7 +77,7 @@ def suggest(prefix=''):
 
 
 @app.route('/<query>')
-@etag(app)
+@etag
 def query(query):
     showgrid = 'showgrid' in request.args
     query = query.decode('utf-8').replace('+', ' ')
