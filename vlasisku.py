@@ -80,7 +80,7 @@ def suggest(prefix=''):
 @etag
 def query(query):
     showgrid = 'showgrid' in request.args
-    query = query.decode('utf-8').replace('+', ' ')
+    query = query.replace('+', ' ')
     querystem = stem(query.lower())
     matches = set()
     
