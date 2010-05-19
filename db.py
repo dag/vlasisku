@@ -37,7 +37,7 @@ class DB(object):
     note_stems
         A dict mapping stems in notes to lists of Entry instances.
     gloss_stems
-        A dict mapping the stem of glosses to lists of Entry instances.
+        A dict mapping the stem of glosses to lists of Gloss instances.
     class_scales
         A dict mapping grammatical classes to font sizes in ems.
     cll
