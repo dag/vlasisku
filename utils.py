@@ -11,6 +11,22 @@ from stemming.porter2 import stem
 from flask import current_app, request
 
 
+def parse_query(query):
+    parsed = {'gloss': [], 'affix': [], 'class': [],
+              'type': [], 'definition': [], 'notes': []}
+    for token in query.split():
+        if ':' in token:
+            field, match = token.split(':', 1)
+        else:
+            for field in parsed.iterkeys():
+                parsed[field].append(token)
+            continue
+        if field not in parsed:
+            continue
+        parsed[field].append(match)
+    return parsed
+
+
 def load_yaml(filename):
     with open(filename) as f:
         return yaml.load(f)

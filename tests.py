@@ -5,7 +5,7 @@ from nose.tools import istest as test, \
                        assert_not_equal as differ
 
 from vlasisku import app, db
-from utils import compound2affixes, tex2html, braces2links
+from utils import compound2affixes, tex2html, braces2links, parse_query
 
 
 app.debug = False
@@ -72,4 +72,12 @@ def braces2links_does_unknown_words():
          '"http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=unknown" '
          'title="This word is missing, please add it!" class="missing">'
          'unknown</a>')
-    
+
+@test
+def parse_query_splits_queries():
+    """The parse_query util links fields to lists of tokens"""
+    same(parse_query('class:BAI event affix:bau'),
+         {'definition': ['event'], 'notes': ['event'],
+          'affix': ['event', 'bau'], 'gloss': ['event'],
+          'type': ['event'], 'class': ['BAI', 'event']})
+

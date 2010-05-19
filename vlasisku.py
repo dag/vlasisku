@@ -9,7 +9,7 @@ from flask import Flask, request, redirect, send_file, Response, json, url_for
 from stemming.porter2 import stem
 
 from db import DB, TYPES
-from utils import etag, compound2affixes, dameraulevenshtein
+from utils import etag, parse_query, compound2affixes, dameraulevenshtein
 from render import GenshiTemplater
 
 
@@ -59,43 +59,52 @@ def complete():
 def query(query):
     showgrid = 'showgrid' in request.args
     query = query.replace('+', ' ')
-    querystem = stem(query.lower())
+    parsed_query = parse_query(query)
     matches = set()
-    
+
     entry = db.entries.get(query, None)
-    if entry:    
+    if entry:
         matches.add(entry)
-    
-    glosses = [g for g in db.gloss_stems.get(querystem, [])
-                 if g.entry not in matches]
-    matches.update(g.entry for g in glosses)
-    
+
+    glosses = []
+    for q in parsed_query['gloss']:
+        for g in db.gloss_stems.get(stem(q.lower()), []):
+            if g.entry not in matches:
+                glosses.append(g)
+                matches.add(g.entry)
+
     affix = [e for e in db.entries.itervalues()
                if e not in matches
-               and query in e.searchaffixes]
+               and any(q in e.searchaffixes for q in parsed_query['affix'])]
     matches.update(affix)
-    
+
     classes = [e for e in db.entries.itervalues()
-                 if e.grammarclass == query
+                 if any(q == e.grammarclass for q in parsed_query['class'])
                  or e.grammarclass
                  and re.split(r'[0-9*]', e.grammarclass)[0] == query]
     matches.update(classes)
-    
+
     types = [e for e in db.entries.itervalues()
-               if e.type == query]
+               if any(q == e.type for q in parsed_query['type'])]
     matches.update(types)
-    
-    definitions = [e for e in db.definition_stems.get(querystem, [])
-                     if e not in matches]
-    matches.update(definitions)
-    
-    notes = [e for e in db.note_stems.get(querystem, [])
-               if e not in matches]
-    matches.update(notes)
-    
+
+    definitions = []
+    for q in parsed_query['definition']:
+        for e in db.definition_stems.get(stem(q.lower()), []):
+            if e not in matches:
+                definitions.append(e)
+                matches.add(e)
+
+    notes = []
+    for q in parsed_query['notes']:
+        for e in db.note_stems.get(stem(q.lower()), []):
+            if e not in matches:
+                notes.append(e)
+                matches.add(e)
+
     if not entry and len(matches) == 1:
         return redirect(url_for('query', query=matches.pop()))
-    
+
     sourcemetaphor = []
     unknownaffixes = None
     similar = None
@@ -107,16 +116,16 @@ def query(query):
                                  if len(a) != 1]
         except IndexError:
             unknownaffixes = True
-        
+
         similar = [e.word for e in db.entries.itervalues()
                           if e not in matches
                           and dameraulevenshtein(query, e.word) == 1]
-        
+
         similar += [g.gloss for g in db.glosses
                             if g.entry not in matches
                             and g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
-    
+
     return render.html('query.xml', locals())
 
 
