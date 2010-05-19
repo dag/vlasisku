@@ -10,7 +10,7 @@ from ordereddict import OrderedDict
 import yaml
 
 from models import Entry, Gloss
-from utils import load_yaml, tex2html, add_stems, braces2links
+from utils import ignore, load_yaml, tex2html, add_stems, braces2links
 
 
 TYPES = (('gismu', 'Root words.'),
@@ -77,6 +77,27 @@ class DB(object):
                 pickle.dump(db, f, pickle.HIGHEST_PROTOCOL)
         return db
 
+    def suggest(self, prefix):
+        suggestions = []
+        types = []
+        entries = (e for e in self.entries.iterkeys()
+                     if e.startswith(prefix))
+        glosses = (g.gloss for g in self.glosses
+                           if g.gloss.startswith(prefix))
+        classes = set(e.grammarclass for e in self.entries.itervalues()
+                                     if e.grammarclass
+                                     and e.grammarclass.startswith(prefix))
+        for x in xrange(5):
+            with ignore(StopIteration):
+                suggestions.append(entries.next())
+                types.append(self.entries[suggestions[-1]].type)
+            with ignore(StopIteration):
+                suggestions.append(glosses.next())
+                types.append('gloss')
+            with ignore(KeyError):
+                suggestions.append(classes.pop())
+                types.append('class')
+        return [prefix, suggestions, types]
 
     def __init__(self, root_path='./',
                  jbovlaste='data/jbovlaste.xml',

@@ -5,12 +5,11 @@ from __future__ import with_statement
 
 import re
 
-from flask import Flask, request, redirect, send_file, Response, \
-                  json, jsonify, url_for
+from flask import Flask, request, redirect, send_file, Response, json, url_for
 from stemming.porter2 import stem
 
 from db import DB, TYPES
-from utils import etag, ignore, compound2affixes, dameraulevenshtein
+from utils import etag, compound2affixes, dameraulevenshtein
 from render import GenshiTemplater
 
 
@@ -46,34 +45,13 @@ def favicon():
 def opensearch():
     return Response(render.xml('opensearch.xml'), mimetype='application/xml')
 
-@app.route('/suggest/')
 @app.route('/suggest/<prefix>')
-def suggest(prefix=''):
-    prefix = request.args.get('q', prefix.replace('+', ' ')).decode('utf-8')
-    suggestions = []
-    types = []
-    entries = (e for e in db.entries.iterkeys()
-                 if e.startswith(prefix))
-    glosses = (g.gloss for g in db.glosses
-                       if g.gloss.startswith(prefix))
-    classes = set(e.grammarclass for e in db.entries.itervalues()
-                                 if e.grammarclass
-                                 and e.grammarclass.startswith(prefix))
-    for x in xrange(5):
-        with ignore(StopIteration):
-            suggestions.append(entries.next())
-            types.append(db.entries[suggestions[-1]].type)
-        with ignore(StopIteration):
-            suggestions.append(glosses.next())
-            types.append('gloss')
-        with ignore(KeyError):
-            suggestions.append(classes.pop())
-            types.append('class')
-    if 'q' in request.args:
-        return '\n'.join(suggestions)
-    else:
-        return Response(json.dumps([prefix, suggestions, types]),
-                        mimetype='application/json')
+def suggest(prefix):
+    return Response(json.dumps(db.suggest(prefix)), mimetype='application/json')
+
+@app.route('/_complete/')
+def complete():
+    return '\n'.join(db.suggest(request.args.get('q', ''))[1])
 
 
 @app.route('/<query>')

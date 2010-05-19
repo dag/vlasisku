@@ -5,7 +5,7 @@ function search() {
 
 jQuery(function ($) {
     $('a').tipTip({maxWidth: '600px'});
-    $('#query').autocomplete('suggest/', {
+    $('#query').autocomplete('_complete/', {
         autoFill: true,
         delay: 0,
         matchCase: true,
