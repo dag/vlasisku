@@ -2,6 +2,7 @@
 
 from __future__ import with_statement
 
+import shlex
 import re
 from functools import wraps
 from contextlib import contextmanager
@@ -14,16 +15,16 @@ from flask import current_app, request
 def parse_query(query):
     parsed = {'gloss': [], 'affix': [], 'class': [],
               'type': [], 'definition': [], 'notes': []}
-    for token in query.split():
+    for token in shlex.split(query.encode('utf-8')):
         if ':' in token:
             field, match = token.split(':', 1)
         else:
             for field in parsed.iterkeys():
-                parsed[field].append(token)
+                parsed[field].append(token.decode('utf-8'))
             continue
         if field not in parsed:
             continue
-        parsed[field].append(match)
+        parsed[field].append(match.decode('utf-8'))
     return parsed
 
 
