@@ -80,5 +80,4 @@ def parse_query_splits_queries():
          {'definition': ['event'], 'notes': ['event'],
           'affix': ['event', 'bau'], 'gloss': ['event'],
           'type': ['event'], 'class': ['BAI', 'event']})
-    same(parse_query('gloss:"weekend day"')['gloss'], ['weekend day'])
 
