@@ -10,7 +10,10 @@
       <h2>Types</h2>
       <dl>
         <py:for each="type, definition in types">
-          <dt><a href="$type">$type</a></dt>
+          <dt py:choose="' ' in type">
+            <a py:when="True" href='./"$type"'>$type</a>
+            <a py:when="False" href="$type">$type</a>
+          </dt>
           <dd>$definition</dd>
         </py:for>
       </dl>
