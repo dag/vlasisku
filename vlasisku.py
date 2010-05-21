@@ -66,7 +66,8 @@ def query(query):
     if entry:
         matches.add(entry)
 
-    glosses = [g for g in db.gloss_stems.get(stem(query), [])
+    glosses = [g for q in parsed_query['gloss']
+                 for g in db.gloss_stems.get(stem(q.lower()), [])
                  if g.entry not in matches]
     matches.update(g.entry for g in glosses)
 
@@ -83,8 +84,9 @@ def query(query):
                  and re.split(r'[0-9*]', e.grammarclass)[0] == query]
     matches.update(classes)
 
-    types = [e for e in db.entries.itervalues()
-               if query == e.type]
+    types = [e for q in parsed_query['type']
+               for e in db.entries.itervalues()
+               if q == e.type]
     matches.update(types)
 
     definitions = [e for q in parsed_query['definition']

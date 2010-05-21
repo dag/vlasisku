@@ -6,6 +6,7 @@ import re
 from functools import wraps
 from contextlib import contextmanager
 
+from pqs import Parser
 import yaml
 from stemming.porter2 import stem
 from flask import current_app, request
@@ -14,7 +15,10 @@ from flask import current_app, request
 def parse_query(query):
     parsed = {'gloss': [], 'affix': [], 'class': [],
               'type': [], 'definition': [], 'notes': []}
-    for token in query.split():
+    parser = Parser()
+    parser.quotechars = set([('"', '"')])
+    query = re.sub(r'(\w+?):"', r'"\1:', query)
+    for _, token in parser.parse(query):
         if ':' in token:
             field, match = token.split(':', 1)
         else:
