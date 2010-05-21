@@ -61,43 +61,78 @@ def query(query):
     query = query.replace('+', ' ')
     parsed_query = parse_query(query)
     matches = set()
-
     entry = db.entries.get(query, None)
     if entry:
         matches.add(entry)
 
-    glosses = [g for q in parsed_query['gloss']
-                 for g in db.gloss_stems.get(stem(q.lower()), [])
-                 if g.entry not in matches]
-    matches.update(g.entry for g in glosses)
+    if parsed_query['all']:
+        glosses = db.matches_gloss(parsed_query['all'], matches)
+        matches.update(g.entry for g in glosses)
 
-    affix = [e for e in db.entries.itervalues()
-               if e not in matches
-               for q in parsed_query['affix']
-               if q in e.searchaffixes]
-    matches.update(affix)
+        affix = db.matches_affix(parsed_query['all'], matches)
+        matches.update(affix)
 
-    classes = [e for q in parsed_query['class']
-                 for e in db.entries.itervalues()
-                 if q == e.grammarclass
-                 or e.grammarclass
-                 and re.split(r'[0-9*]', e.grammarclass)[0] == query]
-    matches.update(classes)
+        classes = db.matches_class(parsed_query['all'])
+        classes += [e for e in db.entries.itervalues()
+                      if e.grammarclass
+                      and e not in classes
+                      and re.split(r'[0-9*]', e.grammarclass)[0] == query]
+        matches.update(classes)
 
-    types = [e for q in parsed_query['type']
-               for e in db.entries.itervalues()
-               if q == e.type]
-    matches.update(types)
+        types = db.matches_type(parsed_query['all'])
+        matches.update(types)
 
-    definitions = [e for q in parsed_query['definition']
-                     for e in db.definition_stems.get(stem(q.lower()), [])
-                     if e not in matches]
-    matches.update(definitions)
+        definitions = db.matches_definition(parsed_query['all'], matches)
+        matches.update(definitions)
 
-    notes = [e for q in parsed_query['notes']
-               for e in db.note_stems.get(stem(q.lower()), [])
-               if e not in matches]
-    matches.update(notes)
+        notes = db.matches_notes(parsed_query['all'], matches)
+        matches.update(notes)
+
+    else:
+        glosses = db.matches_gloss(parsed_query['gloss'], matches)
+        matches.update(g.entry for g in glosses)
+
+        affix = db.matches_affix(parsed_query['affix'], matches)
+        matches.update(affix)
+
+        classes = db.matches_class(parsed_query['class'])
+        matches.update(classes)
+
+        types = db.matches_type(parsed_query['type'])
+        matches.update(types)
+
+        definitions = db.matches_definition(parsed_query['definition'], matches)
+        matches.update(definitions)
+
+        notes = db.matches_notes(parsed_query['notes'], matches)
+        matches.update(notes)
+
+    if parsed_query['gloss']:
+        matches = set(g.entry for g in db.matches_gloss(parsed_query['gloss'])
+                              if e in matches)
+    if parsed_query['affix']:
+        matches = set(e for e in db.matches_affix(parsed_query['affix'])
+                        if e in matches)
+    if parsed_query['class']:
+        matches = set(e for e in db.matches_class(parsed_query['class'])
+                        if e in matches)
+    if parsed_query['type']:
+        matches = set(e for e in db.matches_type(parsed_query['type'])
+                        if e in matches)
+    if parsed_query['definition']:
+        matches = set(e for e
+                        in db.matches_definition(parsed_query['definition'])
+                        if e in matches)
+    if parsed_query['notes']:
+        matches = set(e for e in db.matches_notes(parsed_query['notes'])
+                        if e in matches)
+
+    glosses = [g for g in glosses if g.entry in matches]
+    affix = [e for e in affix if e in matches]
+    classes = [e for e in classes if e in matches]
+    types = [e for e in types if e in matches]
+    definitions = [e for e in definitions if e in matches]
+    notes = [e for e in notes if e in matches]
 
     if not entry and len(matches) == 1:
         return redirect(url_for('query', query=matches.pop()))

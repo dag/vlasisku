@@ -6,6 +6,7 @@ import cPickle as pickle
 import xml.etree.cElementTree as ElementTree
 import re
 
+from stemming.porter2 import stem
 from ordereddict import OrderedDict
 import yaml
 
@@ -98,6 +99,43 @@ class DB(object):
                 suggestions.append(classes.pop())
                 types.append('class')
         return [prefix, suggestions, types]
+
+    def matches_gloss(self, queries, exclude=set()):
+        return [g for q in queries
+                  for g in self.gloss_stems.get(stem(q.lower()), [])
+                  if all(g in self.gloss_stems.get(stem(q.lower()), [])
+                           for q in queries)
+                  if g.entry not in exclude]
+
+    def matches_affix(self, queries, exclude=set()):
+        return [e for e in self.entries.itervalues()
+                  if e not in exclude
+                  for q in queries
+                  if q in e.searchaffixes]
+
+    def matches_class(self, queries):
+        return [e for q in queries
+                  for e in self.entries.itervalues()
+                  if q == e.grammarclass]
+
+    def matches_type(self, queries):
+        return [e for q in queries
+                  for e in self.entries.itervalues()
+                  if q == e.type]
+
+    def matches_definition(self, queries, exclude=set()):
+        return [e for q in queries
+                  for e in self.definition_stems.get(stem(q.lower()), [])
+                  if all(e in self.definition_stems.get(stem(q.lower()), [])
+                           for q in queries)
+                  if e not in exclude]
+
+    def matches_notes(self, queries, exclude=set()):
+        return [e for q in queries
+                  for e in self.note_stems.get(stem(q.lower()), [])
+                  if all(e in self.note_stems.get(stem(q.lower()), [])
+                           for q in queries)
+                  if e not in exclude]
 
     def __init__(self, root_path='./',
                  jbovlaste='data/jbovlaste.xml',

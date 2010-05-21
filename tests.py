@@ -77,7 +77,6 @@ def braces2links_does_unknown_words():
 def parse_query_splits_queries():
     """The parse_query util links fields to lists of tokens"""
     same(parse_query('class:BAI event affix:bau'),
-         {'definition': ['event'], 'notes': ['event'],
-          'affix': ['event', 'bau'], 'gloss': ['event'],
-          'type': ['event'], 'class': ['BAI', 'event']})
+         {'definition': [], 'all': ['event'], 'gloss': [], 'notes': [],
+          'affix': ['bau'], 'type': [], 'class': ['BAI']})
 

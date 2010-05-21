@@ -13,7 +13,7 @@ from flask import current_app, request
 
 
 def parse_query(query):
-    parsed = {'gloss': [], 'affix': [], 'class': [],
+    parsed = {'all': [], 'gloss': [], 'affix': [], 'class': [],
               'type': [], 'definition': [], 'notes': []}
     parser = Parser()
     parser.quotechars = set([('"', '"')])
@@ -22,9 +22,7 @@ def parse_query(query):
         if ':' in token:
             field, match = token.split(':', 1)
         else:
-            for field in parsed.iterkeys():
-                parsed[field].append(token)
-            continue
+            field, match = 'all', token
         if field not in parsed:
             continue
         parsed[field].append(match)

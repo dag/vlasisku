@@ -54,6 +54,9 @@ class Entry(object):
     def __str__(self):
         return self.word
 
+    def __repr__(self):
+        return '<Entry %s>' % self.word
+
     def components(self):
         """Build HTML that links the affixes in a compound
         to their corresponding words, with definitions in the link tooltips.
