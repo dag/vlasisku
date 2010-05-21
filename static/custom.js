@@ -1,5 +1,5 @@
 function search() {
-    window.location = encodeURIComponent(jQuery('#query').attr('value'));
+    window.location = '/' + encodeURIComponent(jQuery('#query').attr('value'));
     return false;
 }
 
