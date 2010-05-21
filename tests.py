@@ -78,5 +78,5 @@ def parse_query_splits_queries():
     """The parse_query util links fields to lists of tokens"""
     same(parse_query('class:BAI event affix:bau'),
          {'definition': [], 'all': ['event'], 'gloss': [], 'notes': [],
-          'affix': ['bau'], 'type': [], 'class': ['BAI']})
+          'affix': ['bau'], 'type': [], 'class': ['BAI'], 'word': []})
 

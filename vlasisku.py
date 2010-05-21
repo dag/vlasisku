@@ -66,6 +66,8 @@ def query(query):
         matches.add(entry)
 
     if parsed_query['all']:
+        words = []
+
         glosses = db.matches_gloss(parsed_query['all'], matches)
         matches.update(g.entry for g in glosses)
 
@@ -89,6 +91,9 @@ def query(query):
         matches.update(notes)
 
     else:
+        words = db.matches_word(parsed_query['word'])
+        matches.update(words)
+
         glosses = db.matches_gloss(parsed_query['gloss'], matches)
         matches.update(g.entry for g in glosses)
 
@@ -107,6 +112,9 @@ def query(query):
         notes = db.matches_notes(parsed_query['notes'], matches)
         matches.update(notes)
 
+    if parsed_query['word']:
+        matches = set(e for e in db.matches_word(parsed_query['word'])
+                        if e in matches)
     if parsed_query['gloss']:
         matches = set(g.entry for g in db.matches_gloss(parsed_query['gloss'])
                               if e in matches)
@@ -127,6 +135,7 @@ def query(query):
         matches = set(e for e in db.matches_notes(parsed_query['notes'])
                         if e in matches)
 
+    words = [e for e in words if e in matches]
     glosses = [g for g in glosses if g.entry in matches]
     affix = [e for e in affix if e in matches]
     classes = [e for e in classes if e in matches]

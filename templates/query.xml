@@ -10,6 +10,7 @@
   <body>
     <div id="matches">
       <ol>
+        <li py:if="words"><a href="#word">${len(words)} on word</a></li>
         <li py:if="glosses"><a href="#gloss">${len(glosses)} on gloss</a></li>
         <li py:if="affix"><a href="#affix">${len(affix)} on affix</a></li>
         <li py:if="classes"><a href="#class">${len(classes)} on class</a></li>
@@ -81,6 +82,7 @@
       <hr/>
     </div>
 
+    <xi:include href="entrylist.xml" py:with="entries=words; id='word'; title='On word:'"/>
     <xi:include href="entrylist.xml" py:with="entries=affix; id='affix'; title='On affix form:'"/>
     <xi:include href="entrylist.xml" py:with="entries=classes; id='class'; title='On grammatical class:'"/>
     <xi:include href="entrylist.xml" py:with="entries=types; id='type'; title='On type:'"/>

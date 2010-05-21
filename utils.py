@@ -14,7 +14,7 @@ from flask import current_app, request
 
 def parse_query(query):
     parsed = {'all': [], 'gloss': [], 'affix': [], 'class': [],
-              'type': [], 'definition': [], 'notes': []}
+              'type': [], 'definition': [], 'notes': [], 'word': []}
     parser = Parser()
     parser.quotechars = set([('"', '"')])
     query = re.sub(r'(\w+?):"', r'"\1:', query)
