@@ -14,6 +14,7 @@ def restart():
 
 def retag():
     with cd(appdir):
+        run('touch data/db.pickle')
         run('touch data/jbovlaste.xml')
     restart()
 
