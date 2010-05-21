@@ -36,6 +36,13 @@ def index():
     return render.html('index.xml', locals())
 
 
+@app.route('/page/help')
+@etag
+def help():
+    showgrid = 'showgrid' in request.args
+    return render.html('help.xml', locals())
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_file('static/favicon.ico', 'image/x-icon')
