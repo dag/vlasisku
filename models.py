@@ -69,10 +69,13 @@ class Entry(object):
                     components += a
                 else:
                     word = [e for e in self.db.entries.itervalues()
-                              if a in e.searchaffixes].pop()
-                    components += '<a href="%s" ' % word
-                    components += 'title="<strong>%s:</strong> ' % word
-                    components += '%s">%s</a>' % (word.definition, a)
+                              if a in e.searchaffixes]
+                    if word:
+                        components += '<a href="%s" ' % word[0]
+                        components += 'title="<strong>%s:</strong> ' % word[0]
+                        components += '%s">%s</a>' % (word[0].definition, a)
+                    else:
+                        components += a
             return components
 
 
