@@ -26,7 +26,6 @@ render = GenshiTemplater(app)
 @app.route('/')
 @etag
 def index():
-    showgrid = 'showgrid' in request.args
     if 'query' in request.args:
         return redirect(request.args.get('query'))
     types = TYPES
@@ -39,8 +38,7 @@ def index():
 @app.route('/page/help')
 @etag
 def help():
-    showgrid = 'showgrid' in request.args
-    return render.html('help.xml', locals())
+    return render.html('help.xml')
 
 
 @app.route('/favicon.ico')
@@ -64,7 +62,6 @@ def complete():
 @app.route('/<query>')
 @etag
 def query(query):
-    showgrid = 'showgrid' in request.args
     query = query.replace('+', ' ')
     parsed_query = parse_query(query)
     matches = set()
