@@ -12,7 +12,7 @@ from ordereddict import OrderedDict
 import yaml
 
 from models import Entry, Gloss
-from utils import ignore, load_yaml, tex2html, add_stems, braces2links
+from utils import ignore, unique, load_yaml, tex2html, add_stems, braces2links
 
 
 TYPES = (('gismu', 'Root words.'),
@@ -94,7 +94,11 @@ class DB(object):
                 suggestions.append(entries.next())
                 types.append(self.entries[suggestions[-1]].type)
             with ignore(StopIteration):
-                suggestions.append(glosses.next())
+                gloss = glosses.next()
+                if ' ' in gloss:
+                    suggestions.append('"%s"' % gloss)
+                else:
+                    suggestions.append(gloss)
                 types.append('gloss')
             with ignore(KeyError):
                 suggestions.append(classes.pop())
@@ -102,46 +106,50 @@ class DB(object):
         return [prefix, suggestions, types]
 
     def matches_word(self, queries):
-        return [e for q in queries
-                  for e in self.entries.itervalues()
-                  if fnmatch(e.word, q)]
+        return unique([e for q in queries
+                         for e in self.entries.itervalues()
+                         if fnmatch(e.word, q)])
 
     def matches_gloss(self, queries, exclude=set()):
-        return [g for q in queries
-                  for g in self.gloss_stems.get(stem(q.lower()), [])
-                  if all(g in self.gloss_stems.get(stem(q.lower()), [])
-                           for q in queries)
-                  if g.entry not in exclude]
+        return unique([g for q in queries
+                         for g in self.gloss_stems.get(stem(q.lower()), [])
+                         if all(g in self.gloss_stems.get(stem(q.lower()), [])
+                                  for q in queries)
+                         if g.entry not in exclude])
 
     def matches_affix(self, queries, exclude=set()):
-        return [e for e in self.entries.itervalues()
-                  if e not in exclude
-                  for q in queries
-                  if any(fnmatch(a, q) for a in e.searchaffixes)]
+        return unique([e for e in self.entries.itervalues()
+                         if e not in exclude
+                         for q in queries
+                         if any(fnmatch(a, q) for a in e.searchaffixes)])
 
-    def matches_class(self, queries):
-        return [e for q in queries
-                  for e in self.entries.itervalues()
-                  if q == e.grammarclass]
+    def matches_class(self, queries, exclude=set()):
+        return unique([e for q in queries
+                         for e in self.entries.itervalues()
+                         if e not in exclude
+                         if q == e.grammarclass])
 
-    def matches_type(self, queries):
-        return [e for q in queries
-                  for e in self.entries.itervalues()
-                  if fnmatch(e.type, q)]
+    def matches_type(self, queries, exclude=set()):
+        return unique([e for q in queries
+                         for e in self.entries.itervalues()
+                         if e not in exclude
+                         if fnmatch(e.type, q)])
 
     def matches_definition(self, queries, exclude=set()):
-        return [e for q in queries
-                  for e in self.definition_stems.get(stem(q.lower()), [])
-                  if all(e in self.definition_stems.get(stem(q.lower()), [])
-                           for q in queries)
-                  if e not in exclude]
+        return unique([e for q in queries
+                         for e
+                         in self.definition_stems.get(stem(q.lower()), [])
+                         if all(e in self.definition_stems.get(stem(q.lower()),
+                                                               [])
+                                  for q in queries)
+                         if e not in exclude])
 
     def matches_notes(self, queries, exclude=set()):
-        return [e for q in queries
-                  for e in self.note_stems.get(stem(q.lower()), [])
-                  if all(e in self.note_stems.get(stem(q.lower()), [])
-                           for q in queries)
-                  if e not in exclude]
+        return unique([e for q in queries
+                         for e in self.note_stems.get(stem(q.lower()), [])
+                         if all(e in self.note_stems.get(stem(q.lower()), [])
+                                  for q in queries)
+                         if e not in exclude])
 
     def __init__(self, root_path='./',
                  jbovlaste='data/jbovlaste.xml',

@@ -29,6 +29,16 @@ def parse_query(query):
     return parsed
 
 
+def unique(sequence):
+    seen = set()
+    result = []
+    for item in sequence:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
+
+
 def load_yaml(filename):
     with open(filename) as f:
         return yaml.load(f)

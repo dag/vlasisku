@@ -81,14 +81,14 @@ def query(query):
         affix = db.matches_affix(parsed_query['all'], matches)
         matches.update(affix)
 
-        classes = db.matches_class(parsed_query['all'])
+        classes = db.matches_class(parsed_query['all'], matches)
         classes += [e for e in db.entries.itervalues()
                       if e.grammarclass
                       and e not in classes
                       and re.split(r'[0-9*]', e.grammarclass)[0] == query]
         matches.update(classes)
 
-        types = db.matches_type(parsed_query['all'])
+        types = db.matches_type(parsed_query['all'], matches)
         matches.update(types)
 
         definitions = db.matches_definition(parsed_query['all'], matches)
@@ -107,10 +107,10 @@ def query(query):
         affix = db.matches_affix(parsed_query['affix'], matches)
         matches.update(affix)
 
-        classes = db.matches_class(parsed_query['class'])
+        classes = db.matches_class(parsed_query['class'], matches)
         matches.update(classes)
 
-        types = db.matches_type(parsed_query['type'])
+        types = db.matches_type(parsed_query['type'], matches)
         matches.update(types)
 
         definitions = db.matches_definition(parsed_query['definition'], matches)
