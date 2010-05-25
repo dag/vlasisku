@@ -6,29 +6,31 @@
   <xi:include href="layout.xml"/>
   <head/>
   <body>
-    <div id="types" class="span-6">
-      <h2>Types</h2>
-      <dl>
-        <py:for each="type, definition in types">
-          <dt py:choose="' ' in type">
-            <a py:when="True" href='./"$type"'>$type</a>
-            <a py:when="False" href="$type">$type</a>
-          </dt>
-          <dd>$definition</dd>
-        </py:for>
-      </dl>
-    </div>
+    <div class="yui-gf">
+      <div id="types" class="yui-u first">
+        <h2>Types</h2>
+        <dl>
+          <py:for each="type, definition in types">
+            <dt py:choose="' ' in type">
+              <a py:when="True" href='./"$type"'>$type</a>
+              <a py:when="False" href="$type">$type</a>
+            </dt>
+            <dd>$definition</dd>
+          </py:for>
+        </dl>
+      </div>
 
-    <div id="classes" class="span-18 last">
-      <h2>Grammatical classes</h2>
-      <p>
-        <py:for each="grammarclass in sorted(classes)"
-                py:with="scale = scales.get(grammarclass, 0.7)">
-          <a href="$grammarclass"
-             style="font-size: ${scale}em"
-             class="${'loud' if scale >= 1 else 'quiet'}">$grammarclass</a>
-        </py:for>
-      </p>
+      <div id="classes" class="yui-u">
+        <h2>Grammatical classes</h2>
+        <p>
+          <py:for each="grammarclass in sorted(classes)"
+                  py:with="scale = scales.get(grammarclass, 0.7)">
+            <a href="$grammarclass"
+               style="font-size: ${scale}em"
+               class="${'loud' if scale >= 1 else 'quiet'}">$grammarclass</a>
+          </py:for>
+        </p>
+      </div>
     </div>
   </body>
 </html>

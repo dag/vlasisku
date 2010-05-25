@@ -1,13 +1,18 @@
-.container {
+body {
+  margin    : 0px auto;
+  max-width : 974px;
+}
+
+#doc3 {
   font-size  : 150%;
   margin-top : 2em;
-}
-.container p {
-  margin-bottom: 1em;
 }
 
 /*****************************************************************************/
 
+#nav {
+  float: left;
+}
 #nav ol {
   list-style-type : none;
   padding-left    : 0;
@@ -117,7 +122,10 @@ a[href^="https:"] {
 }
 
 #tiptip_content {
-  font-size   : 1.3em;
-  white-space : pre-wrap;
+  font-size    : 1.3em;
+  white-space  : pre-wrap;
 }
 
+.ac_results {
+  text-align   : left;
+}
