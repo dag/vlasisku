@@ -2,6 +2,7 @@
 
 from __future__ import with_statement
 
+from collections import defaultdict
 import re
 from functools import wraps
 from contextlib import contextmanager
@@ -19,11 +20,10 @@ def parse_query(query):
     ['coi']
     >>> parse_query('coi rodo')['all']
     ['coi', 'rodo']
-    >>> 'unknown' in parse_query('unknown:foo')
-    False
+    >>> parse_query('anythingrandom:foo')['anythingrandom']
+    ['foo']
     """
-    parsed = {'all': [], 'gloss': [], 'affix': [], 'class': [],
-              'type': [], 'definition': [], 'notes': [], 'word': []}
+    parsed = defaultdict(list)
     parser = Parser()
     parser.quotechars = set([('"', '"')])
     query = re.sub(r'(\w+?):"', r'"\1:', query)
@@ -32,8 +32,6 @@ def parse_query(query):
             field, match = token.split(':', 1)
         else:
             field, match = 'all', token
-        if field not in parsed:
-            continue
         parsed[field].append(match)
     return parsed
 
