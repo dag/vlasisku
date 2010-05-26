@@ -13,6 +13,15 @@ from flask import current_app, request
 
 
 def parse_query(query):
+    """Parse a search query into a dict mapping fields to lists of match tests.
+
+    >>> parse_query('word:coi')['word']
+    ['coi']
+    >>> parse_query('coi rodo')['all']
+    ['coi', 'rodo']
+    >>> 'unknown' in parse_query('unknown:foo')
+    False
+    """
     parsed = {'all': [], 'gloss': [], 'affix': [], 'class': [],
               'type': [], 'definition': [], 'notes': [], 'word': []}
     parser = Parser()
@@ -30,6 +39,15 @@ def parse_query(query):
 
 
 def unique(sequence):
+    """Get a list without duplicates from a sequence, preserving order.
+
+    >>> unique([1,1,2,2,3,3,2,2,1,1])
+    [1, 2, 3]
+    >>> unique([3,1,3,2,1,3,2])
+    [3, 1, 2]
+    >>> ''.join(unique('A unique string? That does not make much sense!'))
+    'A uniqestrg?Thadomkc!'
+    """
     seen = set()
     result = []
     for item in sequence:
@@ -45,6 +63,7 @@ def load_yaml(filename):
 
 
 def compound2affixes(compound):
+    """Split a compound word into affixes and glue."""
     c = r'[bcdfgjklmnprstvxz]'
     v = r'[aeiou]'
     cc = r'''(?:bl|br|
