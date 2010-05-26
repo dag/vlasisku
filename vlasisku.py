@@ -32,13 +32,13 @@ def index():
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales
-    return render.html('index.xml', locals())
+    return render.response('index.xml', locals())
 
 
 @app.route('/page/help')
 @etag
 def help():
-    return render.html('help.xml')
+    return render.response('help.xml')
 
 
 @app.route('/favicon.ico')
@@ -48,7 +48,7 @@ def favicon():
 
 @app.route('/opensearch/')
 def opensearch():
-    return Response(render.xml('opensearch.xml'), mimetype='application/xml')
+    return render.response('opensearch.xml', type='xml')
 
 @app.route('/suggest/<prefix>')
 def suggest(prefix):
@@ -170,7 +170,7 @@ def query(query):
                             if g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
 
-    return render.html('query.xml', locals())
+    return render.response('query.xml', locals())
 
 
 if __name__ == '__main__':
