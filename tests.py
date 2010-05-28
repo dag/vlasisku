@@ -28,8 +28,8 @@ def sets_etag():
 @test
 def sensitive_to_if_none_match_header():
     """Sends a 304 if ETags match"""
-    index = client.get('/', headers={'If-None-Match': app.etag})
-    query = client.get('/coi', headers={'If-None-Match': app.etag})
+    index = client.get('/', headers={'If-None-Match': app.config['ETAG']})
+    query = client.get('/coi', headers={'If-None-Match': app.config['ETAG']})
     same(index.status_code, 304)
     same(query.status_code, 304)
 

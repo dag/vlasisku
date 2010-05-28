@@ -15,10 +15,10 @@ from utils import etag, parse_query, compound2affixes, dameraulevenshtein
 
 app = GenshiFlask(__name__)
 db = DB.load(app.root_path)
-app.etag = db.etag
 
 DEBUG = __name__ == '__main__'
 GENSHI_LOADER = dict(auto_reload=DEBUG)
+ETAG = db.etag
 
 app.config.from_object(__name__)
 

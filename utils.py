@@ -156,10 +156,10 @@ def etag(f):
     """Decorator to add ETag handling to a callback."""
     @wraps(f)
     def wrapper(**kwargs):
-        if request.if_none_match.contains(current_app.etag):
+        if request.if_none_match.contains(current_app.config['ETAG']):
             return current_app.response_class(status=304)
         response = current_app.make_response(f(**kwargs))
-        response.set_etag(current_app.etag)
+        response.set_etag(current_app.config['ETAG'])
         return response
     return wrapper
 
