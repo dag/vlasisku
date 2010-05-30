@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xi="http://www.w3.org/2001/XInclude"
       xmlns:py="http://genshi.edgewall.org/">
-  <xi:include href="layout.xml"/>
+  <xi:include href="layout.html"/>
   <head>
     <title>$query</title>
   </head>
@@ -28,7 +28,7 @@
 
     <p py:if="unknownaffixes" class="error">Compound built with unknown affixes.</p>
 
-    <xi:include href="entrylist.xml" py:with="entries=sourcemetaphor; id='source'; title='Components in this compound:'"/>
+    <xi:include href="entrylist.html" py:with="entries=sourcemetaphor; id='source'; title='Components in this compound:'"/>
 
     <div py:if="entry" id="entry">
       <h1>
@@ -81,11 +81,11 @@
       <hr/>
     </div>
 
-    <xi:include href="entrylist.xml" py:with="entries=words; id='word'; title='On word:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=affix; id='affix'; title='On affix form:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=classes; id='class'; title='On grammatical class:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=types; id='type'; title='On type:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=definitions; id='definition'; title='In definition:'"/>
-    <xi:include href="entrylist.xml" py:with="entries=notes; id='notes'; title='In notes:'"/>
+    <xi:include href="entrylist.html" py:with="entries=words; id='word'; title='On word:'"/>
+    <xi:include href="entrylist.html" py:with="entries=affix; id='affix'; title='On affix form:'"/>
+    <xi:include href="entrylist.html" py:with="entries=classes; id='class'; title='On grammatical class:'"/>
+    <xi:include href="entrylist.html" py:with="entries=types; id='type'; title='On type:'"/>
+    <xi:include href="entrylist.html" py:with="entries=definitions; id='definition'; title='In definition:'"/>
+    <xi:include href="entrylist.html" py:with="entries=notes; id='notes'; title='In notes:'"/>
   </body>
 </html>

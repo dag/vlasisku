@@ -5,19 +5,19 @@ from __future__ import with_statement
 
 import re
 
-from flask import request, redirect, send_file, Response, json, url_for
+from flask import Flask, request, redirect, send_file, Response, json, url_for
+from flaskext.genshi import Genshi, render_response
 from stemming.porter2 import stem
 
 from db import DB, TYPES
-from genshiext import GenshiFlask, render_response
 from utils import etag, parse_query, compound2affixes, dameraulevenshtein
 
 
-app = GenshiFlask(__name__)
+app = Flask(__name__)
 db = DB.load(app.root_path)
+genshi = Genshi(app)
 
 DEBUG = __name__ == '__main__'
-GENSHI_LOADER = dict(auto_reload=DEBUG)
 ETAG = db.etag
 
 app.config.from_object(__name__)
@@ -32,13 +32,13 @@ def index():
     classes = set(e.grammarclass for e in db.entries.itervalues()
                                  if e.grammarclass)
     scales = db.class_scales
-    return render_response('index.xml', locals())
+    return render_response('index.html', locals())
 
 
 @app.route('/page/help')
 @etag
 def help():
-    return render_response('help.xml')
+    return render_response('help.html')
 
 
 @app.route('/favicon.ico')
@@ -48,7 +48,7 @@ def favicon():
 
 @app.route('/opensearch/')
 def opensearch():
-    return render_response('opensearch.xml', type='xml')
+    return render_response('opensearch.xml')
 
 @app.route('/suggest/<prefix>')
 def suggest(prefix):
@@ -170,7 +170,7 @@ def query(query):
                             if g.gloss not in similar
                             and dameraulevenshtein(query, g.gloss) == 1]
 
-    return render_response('query.xml', locals())
+    return render_response('query.html', locals())
 
 
 if __name__ == '__main__':

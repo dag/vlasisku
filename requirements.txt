@@ -1,7 +1,6 @@
-flask
+flask-genshi
 ordereddict
 pyyaml
 simplejson
 stemming
-genshi
 pqs
