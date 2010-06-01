@@ -1,11 +1,11 @@
 function search() {
-    window.location = '/' + encodeURIComponent(jQuery('#query').attr('value'));
+    window.location = '${url_for('query', query='')}' + encodeURIComponent(jQuery('#query').attr('value'));
     return false;
 }
 
 jQuery(function ($) {
     $('a').tipTip({maxWidth: '600px'});
-    $('#query').autocomplete('/_complete/', {
+    $('#query').autocomplete('${url_for('complete')}', {
         delay: 0,
         matchCase: true,
         selectFirst: false
