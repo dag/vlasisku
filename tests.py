@@ -5,7 +5,8 @@ from nose.tools import istest as test, \
                        assert_not_equal as differ
 
 from vlasisku import app, db
-from utils import compound2affixes, tex2html, braces2links, parse_query
+from vlasisku.utils import compound2affixes, tex2html, braces2links, \
+                           parse_query
 
 
 app.debug = False

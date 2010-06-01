@@ -7,9 +7,9 @@ from pprint import pprint
 from flask import *
 
 from vlasisku import *
-from utils import *
-from db import *
-from models import *
+from vlasisku.utils import *
+from vlasisku.database import *
+from vlasisku.models import *
 
 
 os.environ['PYTHONINSPECT'] = 'True'

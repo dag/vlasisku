@@ -9,15 +9,15 @@ from flask import Flask, request, redirect, send_file, Response, json, url_for
 from flaskext.genshi import Genshi, render_response
 from stemming.porter2 import stem
 
-from db import DB, TYPES
-from utils import etag, parse_query, compound2affixes, dameraulevenshtein
+from vlasisku.database import DB, TYPES
+from vlasisku.utils import etag, parse_query, compound2affixes, \
+                           dameraulevenshtein
 
 
 app = Flask(__name__)
 db = DB.load(app.root_path)
 genshi = Genshi(app)
 
-DEBUG = __name__ == '__main__'
 ETAG = db.etag
 
 app.config.from_object(__name__)

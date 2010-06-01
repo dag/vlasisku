@@ -11,8 +11,9 @@ from stemming.porter2 import stem
 from ordereddict import OrderedDict
 import yaml
 
-from models import Entry, Gloss
-from utils import ignore, unique, load_yaml, tex2html, add_stems, braces2links
+from vlasisku.models import Entry, Gloss
+from vlasisku.utils import ignore, unique, load_yaml, \
+                           tex2html, add_stems, braces2links
 
 
 TYPES = (('gismu', 'Root words.'),
