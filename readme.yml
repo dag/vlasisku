@@ -1,26 +1,48 @@
 Dependencies:
-    - Python 2.5
-    - Setuptools for users
+    - Python 2.5+
+    - The packages in requirements.txt
 
 Recommended for developers:
     - bzr
     - pip
     - virtualenv
     - virtualenvwrapper
+    - nose
+    - rudolf
 
-Installation for users: |
-    wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' -O vlasisku/data/jbovlaste.xml
-    sudo easy_install $(cat requirements.txt)
-    ./run.py
 
 Installation for developers: |
-    bzr branch lp:vlasisku; cd vlasisku # If you got this file some other way
-    wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' -O vlasisku/data/jbovlaste.xml
-    mkvirtualenv --no-site-packages vlasisku # Isolated Python environment
-    pip install -r requirements.txt # Installs to that environment
+    bzr branch lp:vlasisku
+    cd vlasisku
+    wget 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en' \
+         -O vlasisku/data/jbovlaste.xml
+
+    # Isolated Python environment
+    mkvirtualenv --no-site-packages vlasisku
+
+    # Installs to that environment
+    pip install -r requirements.txt
+
+    # This takes some 20 seconds the first time
     ./run.py
-    deactivate # When finished
-    workon vlasisku # To reactivate the environment
+
+    # Run tests
+    nosetests -v --with-doctest --with-color
+
+    # When finished
+    deactivate
+
+    # To reactivate the environment
+    workon vlasisku
+
+
+# With this you don't need all them options to nosetests
+~/.noserc: |
+    [nosetests]
+    verbosity=2
+    with-color=1
+    with-doctest=1
+
 
 Thanks:
     - Twey, for compiling the grammatical class usage scales.
