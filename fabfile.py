@@ -26,7 +26,8 @@ def redb():
 def syncdb():
     with cd(appdir):
         run('rm vlasisku/data/db.pickle')
-        run('wget "http://jbovlaste.lojban.org/export/xml-export.html?lang=en" -O vlasisku/data/jbovlaste.xml')
+        run('wget "http://jbovlaste.lojban.org/export/xml-export.html?lang=en"'
+            ' -O vlasisku/data/jbovlaste.xml')
     restart()
 
 def pull():
