@@ -1,4 +1,4 @@
-flask-genshi
+flask-genshi>=0.2
 ordereddict
 pyyaml
 simplejson

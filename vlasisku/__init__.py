@@ -13,12 +13,6 @@ ETAG = db.etag
 
 app.config.from_object(__name__)
 
-genshi.extensions['js'] = 'js'
-genshi.methods['js'] = {
-    'mimetype': 'application/javascript',
-    'serializer': 'text',
-    'class': genshi.methods['text']['class']
-}
 
 import vlasisku.views
 
