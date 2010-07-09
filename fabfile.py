@@ -40,7 +40,7 @@ def installdeps():
 
 def updatedeps():
     with cd(appdir):
-        run('pip install -E %s -r requirements.txt -u' % virtenv)
+        run('pip install -E %s -r requirements.txt -U' % virtenv)
 
 def deploy():
     local('bzr push')
