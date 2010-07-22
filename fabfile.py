@@ -50,7 +50,9 @@ def deploy():
 
 def startbots():
     with cd(appdir):
-        run('source %s/bin/activate' % virtenv)
-        run('nohup ./wordbot.py >/dev/null &')
-        run('nohup ./grammarbot.py >/dev/null &')
+        run("""
+            source %s/bin/activate
+            nohup ./wordbot.py >/dev/null &
+            nohup ./grammarbot.py >/dev/null &
+        """ % virtenv)
 
