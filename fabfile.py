@@ -48,3 +48,8 @@ def deploy():
     installdeps()
     restart()
 
+def startbots():
+    with cd(appdir):
+        run('source %s/bin/activate' % virtenv)
+        run('./wordbot.py & ./grammarbot.py &')
+
