@@ -6,6 +6,10 @@ from collections import defaultdict
 import re
 from functools import wraps
 from contextlib import contextmanager
+from subprocess import Popen, PIPE
+from threading import Thread
+import os
+import signal
 
 from pqs import Parser
 import yaml
@@ -77,20 +81,20 @@ def compound2affixes(compound):
     rafsi3 = r'(?:%(rafsi3v)s|%(c)s%(v)s%(c)s)' % locals()
     rafsi4 = r'(?:%(c)s%(v)s%(c)s%(c)s|%(cc)s%(v)s%(c)s)' % locals()
     rafsi5 = r'%(rafsi4)s%(v)s' % locals()
-    
+
     for i in xrange(1, len(compound)/3+1):
         reg = r'(?:(%(rafsi3)s)([nry])??|(%(rafsi4)s)(y))' % locals() * i
         reg2 = r'^%(reg)s(%(rafsi3v)s|%(rafsi5)s)$$' % locals()
         matches = re.findall(reg2, compound, re.VERBOSE)
         if matches:
             return [r for r in matches[0] if r]
-    
+
     return []
 
 
 def tex2html(tex):
     """Turn most of the TeX used in jbovlaste into HTML.
-    
+
     >>> tex2html('$x_1$ is $10^2*2$ examples of $x_{2}$.')
     u'x<sub>1</sub> is 10<sup>2\\xd72</sup> examples of x<sub>2</sub>.'
     >>> tex2html('\emph{This} is emphasised and \\\\textbf{this} is boldfaced.')
@@ -218,4 +222,48 @@ def dameraulevenshtein(seq1, seq2):
                 and seq1[x-1] == seq2[y] and seq1[x] != seq2[y]):
                 thisrow[y] = min(thisrow[y], twoago[y - 2] + 1)
     return thisrow[len(seq2) - 1]
+
+
+def strip_html(text):
+    """Strip HTML from a string.
+
+    >>> strip_html('x<sub>1</sub> is a variable.')
+    'x1 is a variable.'
+    """
+    return re.sub(r'<.*?>', '', text)
+
+
+def jbofihe(text):
+    """Call ``jbofihe -ie -cr`` on text and return the output.
+
+    >>> jbofihe('coi rodo')
+    "(0[coi {<ro BOI> do} DO'U])0"
+    >>> jbofihe('coi ro')
+    Traceback (most recent call last):
+      ...
+    ValueError: not grammatical
+    >>> jbofihe('(')
+    Traceback (most recent call last):
+      ...
+    ValueError: parser timeout
+    """
+    data = []
+    process = Popen(('jbofihe', '-ie', '-cr'),
+                    stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
+    thread = Thread(target=lambda: data.extend(process.communicate(text)))
+    thread.start()
+    thread.join(5)
+
+    if thread.isAlive():
+        os.kill(process.pid, signal.SIGHUP)
+        raise ValueError('parser timeout')
+
+    output, error = data
+    grammatical = not process.returncode # 0=grammatical, 1=ungrammatical
+
+    if grammatical:
+        return output.replace('\n', ' ').rstrip()
+
+    raise ValueError('not grammatical')
 

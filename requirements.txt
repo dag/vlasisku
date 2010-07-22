@@ -4,3 +4,4 @@ pyyaml
 simplejson
 stemming
 pqs
+Twisted
