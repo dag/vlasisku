@@ -40,23 +40,21 @@ def parse_query(query):
     return parsed
 
 
-def unique(sequence):
-    """Get a list without duplicates from a sequence, preserving order.
+def unique(iterable):
+    """Generator that yields each item only once, in the input order.
 
-    >>> unique([1,1,2,2,3,3,2,2,1,1])
+    >>> list(unique([1,1,2,2,3,3,2,2,1,1]))
     [1, 2, 3]
-    >>> unique([3,1,3,2,1,3,2])
+    >>> list(unique([3,1,3,2,1,3,2]))
     [3, 1, 2]
     >>> ''.join(unique('A unique string? That does not make much sense!'))
     'A uniqestrg?Thadomkc!'
     """
     seen = set()
-    result = []
-    for item in sequence:
+    for item in iterable:
         if item not in seen:
             seen.add(item)
-            result.append(item)
-    return result
+            yield item
 
 
 def load_yaml(filename):
