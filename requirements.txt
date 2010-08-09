@@ -1,4 +1,5 @@
 flask-genshi>=0.2
+flask-script
 ordereddict
 pyyaml
 simplejson
