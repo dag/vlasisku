@@ -251,7 +251,7 @@ def jbofihe(text):
 
     thread = Thread(target=lambda: data.extend(process.communicate(text)))
     thread.start()
-    thread.join(5)
+    thread.join(1)
 
     if thread.isAlive():
         os.kill(process.pid, signal.SIGHUP)
@@ -264,4 +264,3 @@ def jbofihe(text):
         return output.replace('\n', ' ').rstrip()
 
     raise ValueError('not grammatical')
-
