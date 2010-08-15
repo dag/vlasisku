@@ -24,7 +24,7 @@ Installation for developers: |
     pip install -r requirements.txt
 
     # This takes some 20 seconds the first time
-    ./run.py
+    ./manage.py runserver
 
     # Run tests
     nosetests -v --with-doctest --with-color
@@ -47,4 +47,3 @@ Installation for developers: |
 Thanks:
     - Twey, for compiling the grammatical class usage scales.
     - Adam Lopresto, for the Perl code compound2affixes mimics.
-
