@@ -236,10 +236,18 @@ def jbofihe(text):
 
     >>> jbofihe('coi rodo')
     "(0[coi {<ro BOI> do} DO'U])0"
+    >>> jbofihe('coi ho')
+    Traceback (most recent call last):
+      ...
+    ValueError: not grammatical: coi _ho_ ⚠
+    >>> jbofihe("coi ro do'u")
+    Traceback (most recent call last):
+      ...
+    ValueError: not grammatical: coi ro _do'u_ ⚠
     >>> jbofihe('coi ro')
     Traceback (most recent call last):
       ...
-    ValueError: not grammatical
+    ValueError: not grammatical: coi ro ⚠
     >>> jbofihe('(')
     Traceback (most recent call last):
       ...
@@ -262,5 +270,25 @@ def jbofihe(text):
 
     if grammatical:
         return output.replace('\n', ' ').rstrip()
+
+    error = error.replace('\n', ' ')
+    match = re.match(r"^Unrecognizable word '(?P<word>.+?)' "
+                     r"at line \d+ column (?P<column>\d+)", error)
+    if match:
+        reg = r'^(%s)(%s)(.*)' % ('.' * (int(match.group('column')) - 1),
+                                   match.group('word'))
+        text = re.sub(reg, r'\1_\2_ ⚠ \3', text).rstrip()
+        raise ValueError('not grammatical: %s' % text)
+
+    if '<End of text>' in error:
+        raise ValueError('not grammatical: %s ⚠' % text)
+
+    match = re.search(r'Misparsed token :\s+(?P<word>.+?) \[.+?\] '
+                      r'\(line \d+, col (?P<column>\d+)\)', error)
+    if match:
+        reg = r'^(%s)(%s)(.*)' % ('.' * (int(match.group('column')) - 1),
+                                   match.group('word'))
+        text = re.sub(reg, r'\1_\2_ ⚠ \3', text).rstrip()
+        raise ValueError('not grammatical: %s' % text)
 
     raise ValueError('not grammatical')
