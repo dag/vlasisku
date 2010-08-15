@@ -52,7 +52,5 @@ def startbots():
     with cd(appdir):
         run("""
             source %s/bin/activate
-            nohup ./wordbot.py >/dev/null &
-            nohup ./grammarbot.py >/dev/null &
+            nohup ./manage.py runbots >/dev/null &
         """ % virtenv)
-
