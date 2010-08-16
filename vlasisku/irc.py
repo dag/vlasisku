@@ -59,15 +59,26 @@ class WordBot(BotBase):
 
     nickname = 'valsi'
 
-    def query(self, target, entry):
-        url = 'http://vlasisku.lojban.org/%s' % entry.replace(' ', '+')
-        if entry in db.entries:
-            format = '%(entry)s = %(definition)s'
-            definition = strip_html(db.entries[entry]
+    def query(self, target, query):
+        url = 'http://vlasisku.lojban.org/%s' % query.replace(' ', '+')
+        results = db.query(query)
+        format = '%s = %s'
+        if results['entry']:
+            definition = strip_html(results['entry']
                                    .definition.encode('utf-8'))
+            self.msg(target, format % (results['entry'], definition))
+        elif len(results['matches']) == 1:
+            entry = results['matches'].pop()
+            definition = strip_html(entry.definition.encode('utf-8'))
+            self.msg(target, format % (entry, definition))
+        elif results['matches']:
+            format = '%d result%s: %s'
+            self.msg(target, format % (len(results['matches']),
+                                       's' if len(results['matches']) != 1
+                                           else '',
+                                       url))
         else:
-            format = u'%(entry)s ≠ defined. %(url)s'.encode('utf-8')
-        self.msg(target, format % locals())
+            self.msg(target, 'no results. %s' % url)
 
 class WordBotFactory(FactoryBase):
     protocol = WordBot
@@ -87,4 +98,3 @@ class GrammarBot(BotBase):
 
 class GrammarBotFactory(FactoryBase):
     protocol = GrammarBot
-

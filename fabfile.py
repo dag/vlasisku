@@ -54,3 +54,7 @@ def startbots():
             source %s/bin/activate
             nohup ./manage.py runbots >/dev/null &
         """ % virtenv)
+
+def restartbots():
+    run('pkill -f runbots')
+    startbots()

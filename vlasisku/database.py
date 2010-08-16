@@ -12,7 +12,7 @@ from ordereddict import OrderedDict
 import yaml
 
 from vlasisku.models import Entry, Gloss
-from vlasisku.utils import ignore, unique, load_yaml, \
+from vlasisku.utils import parse_query, ignore, unique, load_yaml, \
                            tex2html, add_stems, braces2links
 
 
@@ -79,6 +79,99 @@ class DB(object):
             with open(join(root_path, cache), 'w') as f:
                 pickle.dump(db, f, pickle.HIGHEST_PROTOCOL)
         return db
+
+    def query(self, query):
+        """
+
+        >>> from vlasisku import db
+        >>> len(db.query('class:UI4')['matches'])
+        6
+        """
+        parsed_query = parse_query(query)
+        matches = set()
+        entry = self.entries.get(query, None)
+        if entry:
+            matches.add(entry)
+
+        if parsed_query['all']:
+            words = []
+
+            glosses = self.matches_gloss(parsed_query['all'], matches)
+            matches.update(g.entry for g in glosses)
+
+            affix = self.matches_affix(parsed_query['all'], matches)
+            matches.update(affix)
+
+            classes = self.matches_class(parsed_query['all'], matches)
+            classes += [e for e in self.entries.itervalues()
+                          if e.grammarclass
+                          and e not in classes
+                          and re.split(r'[0-9*]', e.grammarclass)[0] == query]
+            matches.update(classes)
+
+            types = self.matches_type(parsed_query['all'], matches)
+            matches.update(types)
+
+            definitions = self.matches_definition(parsed_query['all'], matches)
+            matches.update(definitions)
+
+            notes = self.matches_notes(parsed_query['all'], matches)
+            matches.update(notes)
+
+        else:
+            words = self.matches_word(parsed_query['word'])
+            matches.update(words)
+
+            glosses = self.matches_gloss(parsed_query['gloss'], matches)
+            matches.update(g.entry for g in glosses)
+
+            affix = self.matches_affix(parsed_query['affix'], matches)
+            matches.update(affix)
+
+            classes = self.matches_class(parsed_query['class'], matches)
+            matches.update(classes)
+
+            types = self.matches_type(parsed_query['type'], matches)
+            matches.update(types)
+
+            definitions = self.matches_definition(parsed_query['definition'], matches)
+            matches.update(definitions)
+
+            notes = self.matches_notes(parsed_query['notes'], matches)
+            matches.update(notes)
+
+        if parsed_query['word']:
+            matches = set(e for e in self.matches_word(parsed_query['word'])
+                            if e in matches)
+        if parsed_query['gloss']:
+            matches = set(g.entry for g in self.matches_gloss(parsed_query['gloss'])
+                                  if e in matches)
+        if parsed_query['affix']:
+            matches = set(e for e in self.matches_affix(parsed_query['affix'])
+                            if e in matches)
+        if parsed_query['class']:
+            matches = set(e for e in self.matches_class(parsed_query['class'])
+                            if e in matches)
+        if parsed_query['type']:
+            matches = set(e for e in self.matches_type(parsed_query['type'])
+                            if e in matches)
+        if parsed_query['definition']:
+            matches = set(e for e
+                            in self.matches_definition(parsed_query['definition'])
+                            if e in matches)
+        if parsed_query['notes']:
+            matches = set(e for e in self.matches_notes(parsed_query['notes'])
+                            if e in matches)
+
+        words = [e for e in words if e in matches]
+        glosses = [g for g in glosses if g.entry in matches]
+        affix = [e for e in affix if e in matches]
+        classes = [e for e in classes if e in matches]
+        types = [e for e in types if e in matches]
+        definitions = [e for e in definitions if e in matches]
+        notes = [e for e in notes if e in matches]
+
+        return locals()
 
     def suggest(self, prefix):
         suggestions = []
@@ -246,4 +339,3 @@ class DB(object):
                     gloss.place = word.get('place')
                     self.glosses.append(gloss)
                     add_stems(gloss.gloss, self.gloss_stems, gloss)
-
