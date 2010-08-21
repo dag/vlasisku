@@ -171,7 +171,9 @@ class DB(object):
         definitions = [e for e in definitions if e in matches]
         notes = [e for e in notes if e in matches]
 
-        return locals()
+        results = dict(locals())
+        del results['self']
+        return results
 
     def suggest(self, prefix):
         suggestions = []
