@@ -228,7 +228,7 @@ def strip_html(text):
     >>> strip_html('x<sub>1</sub> is a variable.')
     'x1 is a variable.'
     """
-    return re.sub(r'<.*?>', '', text)
+    return re.sub(r'<.*?>', '', text.replace('\n', '; '))
 
 
 def jbofihe(text):
