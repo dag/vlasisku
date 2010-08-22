@@ -7,7 +7,7 @@ from twisted.python import log
 from twisted.words.protocols.irc import IRCClient
 
 from vlasisku import db
-from vlasisku.utils import strip_html, jbofihe
+from vlasisku.utils import jbofihe
 
 
 class BotBase(IRCClient):
@@ -60,17 +60,45 @@ class WordBot(BotBase):
     nickname = 'valsi'
 
     def query(self, target, query):
+        field = 'definition'
+        match = re.search(r'\s\((?P<field>affix|class|type|notes|cll|url)\)$',
+                          query)
+        if match:
+            field = match.group('field')
+            query = re.sub(r'\s\(.+?\)$', '', query)
+
         url = 'http://vlasisku.lojban.org/%s' % query.replace(' ', '+')
         results = db.query(query)
-        format = '%s = %s'
-        if results['entry']:
-            definition = strip_html(results['entry']
-                                   .definition.encode('utf-8'))
-            self.msg(target, format % (results['entry'], definition))
-        elif len(results['matches']) == 1:
+
+        entry = results['entry']
+        if not entry and len(results['matches']) == 1:
             entry = results['matches'].pop()
-            definition = strip_html(entry.definition.encode('utf-8'))
-            self.msg(target, format % (entry, definition))
+
+        if entry:
+            case = lambda x: field == x
+            if case('definition'):
+                data = entry.textdefinition.encode('utf-8')
+            elif case('affix'):
+                data = ', '.join('-%s-' % i for i in entry.affixes)
+            elif case('class'):
+                data = entry.grammarclass
+            elif case('type'):
+                data = entry.type
+            elif case('notes'):
+                data = entry.textnotes.encode('utf-8')
+            elif case('cll'):
+                data = '  '.join(link for (chap, link) in entry.cll)
+            elif case('url'):
+                data = url
+
+            data = data or '(none)'
+            if field == 'definition':
+                format = '%s = %s'
+                self.msg(target, format % (entry, data))
+            else:
+                format = '%s (%s) = %s'
+                self.msg(target, format % (entry, field, data))
+
         elif results['matches']:
             format = '%d result%s: %s'
             self.msg(target, format % (len(results['matches']),

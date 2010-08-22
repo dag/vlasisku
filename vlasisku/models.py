@@ -41,6 +41,8 @@ class Entry(object):
     cll = None
     definition = None
     notes = None
+    textdefinition = None
+    textnotes = None
     db = None
 
     # We need new lists for every instance.
@@ -99,4 +101,3 @@ class Gloss(object):
     entry = None
     sense = None
     place = None
-

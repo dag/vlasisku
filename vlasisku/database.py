@@ -13,7 +13,7 @@ import yaml
 
 from vlasisku.models import Entry, Gloss
 from vlasisku.utils import parse_query, ignore, unique, load_yaml, \
-                           tex2html, add_stems, braces2links
+                           tex2html, add_stems, braces2links, strip_html
 
 
 TYPES = (('gismu', 'Root words.'),
@@ -316,12 +316,14 @@ class DB(object):
 
     def _process_definition(self, entry, text):
         entry.definition = tex2html(text)
+        entry.textdefinition = strip_html(entry.definition)
         tokens = re.findall(r"[\w']+", text, re.UNICODE)
         for token in set(tokens):
             add_stems(token, self.definition_stems, entry)
 
     def _process_notes(self, entry, text):
         entry.notes = tex2html(text)
+        entry.textnotes = strip_html(entry.notes)
         tokens = re.findall(r"[\w']+", text, re.UNICODE)
         for token in set(tokens):
             add_stems(token, self.note_stems, entry)
