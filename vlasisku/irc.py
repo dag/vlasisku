@@ -52,7 +52,7 @@ class BotBase(IRCClient):
 class FactoryBase(ReconnectingClientFactory):
     server = 'irc.freenode.net'
     port = 6667
-    channels = '#lojban,#jbopre,#vlaski'
+    channels = '#lojban,##ckule,#jbopre,#vlaski'
 
 
 class WordBot(BotBase):
