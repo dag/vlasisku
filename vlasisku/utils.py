@@ -262,7 +262,7 @@ def jbofihe(text):
     thread.join(1)
 
     if thread.isAlive():
-        os.kill(process.pid, signal.SIGHUP)
+        os.kill(process.pid, signal.SIGTERM)
         raise ValueError('parser timeout')
 
     output, error = data
