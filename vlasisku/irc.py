@@ -60,9 +60,15 @@ class WordBot(BotBase):
     nickname = 'valsi'
 
     def query(self, target, query):
+        fields = 'affix|class|type|notes|cll|url'
+
+        if query == 'help!':
+            self.msg(target, '<query http://tiny.cc/query-format > '
+                             '[(%s)]' % fields)
+            return
+
         field = 'definition'
-        match = re.search(r'\s\((?P<field>affix|class|type|notes|cll|url)\)$',
-                          query)
+        match = re.search(r'\s\((?P<field>%s)\)$' % fields, query)
         if match:
             field = match.group('field')
             query = re.sub(r'\s\(.+?\)$', '', query)
