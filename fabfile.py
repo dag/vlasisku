@@ -12,22 +12,12 @@ virtenv = '/home/dag/.virtualenvs/vlasisku'
 def restart():
     run('touch %s/app.wsgi' % appdir)
 
-def retag():
-    with cd(appdir):
-        run('touch vlasisku/data/jbovlaste.xml')
-    restart()
-
-def redb():
-    with cd(appdir):
-        run('rm vlasisku/data/db.pickle')
-    retag()
-
 def syncdb():
     with cd(appdir):
-        run('rm vlasisku/data/db.pickle')
-        run('wget "http://jbovlaste.lojban.org/export/xml-export.html?lang=en"'
-            ' -O vlasisku/data/jbovlaste.xml')
-    restart()
+        run("""
+            source %s/bin/activate
+            ./manage.py updatedb
+        """ % virtenv)
 
 def pull():
     with cd(appdir):

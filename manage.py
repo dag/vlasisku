@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+from __future__ import with_statement
+
 from flaskext.script import Manager
 
 from vlasisku import app
@@ -46,6 +48,27 @@ def shell_context():
     context.update(vars(vlasisku.models))
 
     return context
+
+
+@manager.command
+def updatedb():
+    """Export and index a new database from jbovlaste."""
+
+    from contextlib import closing
+    from urllib2 import urlopen
+    import xml.etree.cElementTree as etree
+    import os
+
+    url = 'http://jbovlaste.lojban.org/export/xml-export.html?lang=en'
+    with closing(urlopen(url)) as data:
+        xml = etree.parse(data)
+        assert xml.getroot().tag == 'dictionary'
+        with open('vlasisku/data/jbovlaste.xml', 'w') as file:
+            xml.write(file, 'utf-8')
+        os.system('''
+            rm vlasisku/data/db.pickle
+            touch app.wsgi
+            ''')
 
 
 if __name__ == "__main__":
