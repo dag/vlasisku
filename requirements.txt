@@ -6,3 +6,4 @@ simplejson
 pystemmer
 pqs
 Twisted
+jellyfish

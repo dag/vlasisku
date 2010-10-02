@@ -15,6 +15,7 @@ from pqs import Parser
 import yaml
 from stemming.porter2 import stem
 from flask import current_app, request
+import jellyfish
 
 
 def parse_query(query):
@@ -175,7 +176,6 @@ def ignore(exc):
         pass
 
 
-# http://mwh.geek.nz/2009/04/26/python-damerau-levenshtein-distance/
 def dameraulevenshtein(seq1, seq2):
     """Calculate the Damerau-Levenshtein distance between sequences.
 
@@ -199,27 +199,8 @@ def dameraulevenshtein(seq1, seq2):
     >>> dameraulevenshtein('abcd', ['b', 'a', 'c', 'd', 'e'])
     2
     """
-    # codesnippet:D0DE4716-B6E6-4161-9219-2903BF8F547F
-    # Conceptually, this is based on a len(seq1) + 1 * len(seq2) + 1 matrix.
-    # However, only the current and two previous rows are needed at once,
-    # so we only store those.
-    oneago = None
-    thisrow = range(1, len(seq2) + 1) + [0]
-    for x in xrange(len(seq1)):
-        # Python lists wrap around for negative indices, so put the
-        # leftmost column at the *end* of the list. This matches with
-        # the zero-indexed strings and saves extra calculation.
-        twoago, oneago, thisrow = oneago, thisrow, [0] * len(seq2) + [x + 1]
-        for y in xrange(len(seq2)):
-            delcost = oneago[y] + 1
-            addcost = thisrow[y - 1] + 1
-            subcost = oneago[y - 1] + (seq1[x] != seq2[y])
-            thisrow[y] = min(delcost, addcost, subcost)
-            # This block deals with transpositions
-            if (x > 0 and y > 0 and seq1[x] == seq2[y - 1]
-                and seq1[x-1] == seq2[y] and seq1[x] != seq2[y]):
-                thisrow[y] = min(thisrow[y], twoago[y - 2] + 1)
-    return thisrow[len(seq2) - 1]
+    return jellyfish.damerau_levenshtein_distance(seq1.encode('utf-8'),
+                                                  seq2.encode('utf-8'))
 
 
 def strip_html(text):
