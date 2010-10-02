@@ -7,7 +7,7 @@ import cPickle as pickle
 import xml.etree.cElementTree as ElementTree
 import re
 
-from stemming.porter2 import stem
+from Stemmer import Stemmer
 from ordereddict import OrderedDict
 import yaml
 
@@ -24,6 +24,9 @@ TYPES = (('gismu', 'Root words.'),
          ('experimental gismu', 'Non-standard root words.'),
          ('experimental cmavo', 'Non-standard particles.'),
          ('cmene', 'Names.'))
+
+
+stem = Stemmer('english').stemWord
 
 
 class DB(object):

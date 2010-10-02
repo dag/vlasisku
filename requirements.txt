@@ -3,6 +3,6 @@ flask-script
 ordereddict
 pyyaml
 simplejson
-stemming
+pystemmer
 pqs
 Twisted
