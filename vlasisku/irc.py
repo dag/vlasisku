@@ -6,7 +6,7 @@ from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.python import log
 from twisted.words.protocols.irc import IRCClient
 
-from vlasisku import db
+from vlasisku import database
 from vlasisku.utils import jbofihe
 
 
@@ -74,7 +74,7 @@ class WordBot(BotBase):
             query = re.sub(r'\s\(.+?\)$', '', query)
 
         url = 'http://vlasisku.lojban.org/%s' % query.replace(' ', '+')
-        results = db.query(query)
+        results = database.root.query(query)
 
         entry = results['entry']
         if not entry and len(results['matches']) == 1:
