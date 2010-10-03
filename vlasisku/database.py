@@ -250,7 +250,7 @@ class Root(object):
                             if e in matches)
         if parsed_query['gloss']:
             matches = set(g.entry for g in self.matches_gloss(parsed_query['gloss'])
-                                  if e in matches)
+                                  if g.entry in matches)
         if parsed_query['affix']:
             matches = set(e for e in self.matches_affix(parsed_query['affix'])
                             if e in matches)
