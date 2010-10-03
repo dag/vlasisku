@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 
 from __future__ import with_statement
 
@@ -12,8 +13,7 @@ from ordereddict import OrderedDict
 import yaml
 
 from vlasisku.models import Entry, Gloss
-from vlasisku.utils import parse_query, ignore, unique, load_yaml, \
-                           tex2html, add_stems, braces2links, strip_html
+from vlasisku.utils import parse_query, ignore, unique
 
 
 TYPES = (('gismu', 'Root words.'),
@@ -29,66 +29,168 @@ TYPES = (('gismu', 'Root words.'),
 stem = Stemmer('english').stemWord
 
 
-class DB(object):
-    """Container for all the processed data.
+def load_yaml(filename):
+    with open(filename) as f:
+        return yaml.load(f)
 
-    Attributes:
 
-    entries
-        An OrderedDict mapping entry names to Entry instances.
-    glosses
-        A list of Gloss instances.
-    definition_stems
-        A dict mapping stems in definitions to lists of Entry instances.
-    note_stems
-        A dict mapping stems in notes to lists of Entry instances.
-    gloss_stems
-        A dict mapping the stem of glosses to lists of Gloss instances.
-    class_scales
-        A dict mapping grammatical classes to font sizes in ems.
-    cll
-        A dict mapping grammatical classes to lists
-        of ``[chapter, section]`` lists.
-    terminators
-        A dict mapping grammatical classes to terminating grammatical classes.
-    etag
-        A string that changes if the database changes.
+def tex2html(tex):
+    """Turn most of the TeX used in jbovlaste into HTML.
 
+    >>> tex2html('$x_1$ is $10^2*2$ examples of $x_{2}$.')
+    u'x<sub>1</sub> is 10<sup>2\\xd72</sup> examples of x<sub>2</sub>.'
+    >>> tex2html('\emph{This} is emphasised and \\\\textbf{this} is boldfaced.')
+    u'<em>This</em> is emphasised and <strong>this</strong> is boldfaced.'
     """
+    def math(m):
+        t = []
+        for x in m.group(1).split('='):
+            x = x.replace('{', '').replace('}', '')
+            x = x.replace('*', u'×')
+            if '_' in x:
+                t.append(u'%s<sub>%s</sub>' % tuple(x.split('_')[0:2]))
+            elif '^' in x:
+                t.append(u'%s<sup>%s</sup>' % tuple(x.split('^')[0:2]))
+            else:
+                t.append(x)
+        return '='.join(t)
+    def typography(m):
+        if m.group(1) == 'emph':
+            return u'<em>%s</em>' % m.group(2)
+        elif m.group(1) == 'textbf':
+            return u'<strong>%s</strong>' % m.group(2)
+    def lines(m):
+        format = '\n%s'
+        if m.group(1).startswith('|'):
+            format = '\n<span style="font-family: monospace">    %s</span>'
+        elif m.group(1).startswith('>'):
+            format = '\n<span style="font-family: monospace">   %s</span>'
+        return format % m.group(1)
+    def puho(m):
+        format = 'inchoative\n<span style="font-family: monospace">%s</span>'
+        return format % m.group(1)
+    tex = re.sub(r'\$(.+?)\$', math, tex)
+    tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
+    tex = re.sub(r'(?![|>\-])\s\s+(.+)', lines, tex)
+    tex = re.sub(r'inchoative\s\s+(----.+)', puho, tex)
+    return tex
 
-    entries = None
-    glosses = None
-    definition_stems = None
-    note_stems = None
-    gloss_stems = None
-    class_scales = None
-    cll = None
-    terminators = None
-    etag = None
 
-    @classmethod
-    def load(cls, root_path='./', cache='data/db.pickle', **kwargs):
-        """Try to load a cached database, fall back on building a new one.
+def braces2links(text, entries):
+    """Turns {quoted words} into HTML links."""
+    def f(m):
+        try:
+            values = (m.group(1), entries[m.group(1)].definition, m.group(1))
+            return u'<a href="%s" title="%s">%s</a>' % values
+        except KeyError:
+            link = u'<a href="http://jbovlaste.lojban.org' \
+                    '/dict/addvalsi.html?valsi=%s" ' \
+                    'title="This word is missing, please add it!" ' \
+                    'class="missing">%s</a>'
+            return link % (m.group(1), m.group(1))
+    return re.sub(r'\{(.+?)\}', f, text)
 
-        ``kwargs`` are passed to :meth:`__init__`.
 
-        """
+def add_stems(token, collection, item):
+    stemmed = stem(token.lower())
+    if stemmed not in collection:
+        collection[stemmed] = []
+    if item not in collection[stemmed]:
+        collection[stemmed].append(item)
+
+
+def strip_html(text):
+    """Strip HTML from a string.
+
+    >>> strip_html('x<sub>1</sub> is a variable.')
+    'x1 is a variable.'
+    """
+    return re.sub(r'<.*?>', '', text.replace('\n', '; '))
+
+
+class Database(object):
+
+    #: The root node, a :class:`Root`.
+    root = None
+
+    def __init__(self, app=None):
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app):
+        self.app = app
+        root_path = app.root_path
+        cache = app.config.get('VLASISKU_CACHE', 'data/db.pickle')
         try:
             with open(join(root_path, cache)) as f:
-                db = pickle.load(f)
-            db.etag = str(getmtime(join(root_path, cache)))
+                root = pickle.load(f)
+            root.etag = str(getmtime(join(root_path, cache)))
         except IOError:
-            db = cls(root_path, **kwargs)
+            root = Root(self)
             with open(join(root_path, cache), 'w') as f:
-                pickle.dump(db, f, pickle.HIGHEST_PROTOCOL)
-        return db
+                pickle.dump(root, f, pickle.HIGHEST_PROTOCOL)
+        self.root = root
+
+
+class Root(object):
+    """Container for all the processed data."""
+
+    #: An OrderedDict mapping entry names to Entry instances.
+    entries = None
+
+    #: A list of Gloss instances.
+    glosses = None
+
+    #: A dict mapping stems in definitions to lists of Entry instances.
+    definition_stems = None
+
+    #: A dict mapping stems in notes to lists of Entry instances.
+    note_stems = None
+
+    #: A dict mapping the stem of glosses to lists of Gloss instances.
+    gloss_stems = None
+
+    #: A dict mapping grammatical classes to font sizes in ems.
+    class_scales = None
+
+    #: A dict mapping grammatical classes to lists
+    #: of ``[chapter, section]`` lists.
+    cll = None
+
+    #: A dict mapping grammatical classes to terminating grammatical classes.
+    terminators = None
+
+    #: A string that changes if the database changes.
+    etag = None
+
+    def __init__(self, db):
+        cfg = db.app.config
+
+        root_path = db.app.root_path
+        jbovlaste = cfg.get('VLASISKU_JBOVLASTE', 'data/jbovlaste.xml')
+        class_scales = cfg.get('VLASISKU_CLASS_SCALES',
+                               'data/class-scales.yml')
+        cll = cfg.get('VLASISKU_CLL', 'data/cll.yml')
+        terminators = cfg.get('VLASISKU_TERMINATORS', 'data/terminators.yml')
+
+        self.class_scales = load_yaml(join(root_path, class_scales))
+        self.cll = load_yaml(join(root_path, cll))
+        self.terminators = load_yaml(join(root_path, terminators))
+
+        with open(join(root_path, jbovlaste)) as f:
+            xml = ElementTree.parse(f)
+            self._load_entries(xml)
+            self._load_glosses(xml)
+
+        self.etag = str(getmtime(join(root_path, jbovlaste)))
 
     def query(self, query):
-        """
+        """Query database with query language.
 
         >>> from vlasisku import db
         >>> len(db.query('class:UI4')['matches'])
         6
+
         """
         parsed_query = parse_query(query)
         matches = set()
@@ -248,25 +350,6 @@ class DB(object):
                              if all(e in self.note_stems.get(
                                 stem(q.lower()), []) for q in queries)
                              if e not in exclude))
-
-    def __init__(self, root_path='./',
-                 jbovlaste='data/jbovlaste.xml',
-                 class_scales='data/class-scales.yml',
-                 cll='data/cll.yml',
-                 terminators='data/terminators.yml'):
-        """Build a database from the data files."""
-
-        self.class_scales = load_yaml(join(root_path, class_scales))
-        self.cll = load_yaml(join(root_path, cll))
-        self.terminators = load_yaml(join(root_path, terminators))
-
-        with open(join(root_path, jbovlaste)) as f:
-            xml = ElementTree.parse(f)
-            self._load_entries(xml)
-            self._load_glosses(xml)
-
-        self.etag = str(getmtime(join(root_path, jbovlaste)))
-
 
     def _load_entries(self, xml):
         processors = {'rafsi': self._process_rafsi,

@@ -2,47 +2,45 @@ from utils import compound2affixes
 
 
 class Entry(object):
-    """Container for jbovlaste entry data.
+    """Container for jbovlaste entry data."""
 
-    Attributes:
-
-    word
-        The word (or compound) this entry describes.
-    type
-        The type of the word, such as ``'gismu'``.
-    affixes
-        A list of three-letter affix forms for the word.
-    searchaffixes
-        A list of affixes including four and five-letter versions.
-    grammarclass
-        The grammatical class if the word is a particle.
-    terminator
-        The grammatical class of this words terminator, if any.
-    terminates
-        A list of grammatical classes this word terminates, for terminators.
-    cll
-        A list of two-tuples such as ``('<chapter>.<section>', 'http://...')``.
-    definition
-        The entry definition, such as a place structure.
-    notes
-        Notes about the entry.
-    db
-        The :class:`~db.DB` instance this entry is in.
-
-    """
-
+    #: The word (or compound) this entry describes.
     word = None
+
+    #: The type of the word, such as ``'gismu'``.
     type = None
+
+    #: A list of three-letter affix forms for the word.
     affixes = None
+
+    #: A list of affixes including four and five-letter versions.
     searchaffixes = None
+
+    #: The grammatical class if the word is a particle.
     grammarclass = None
+
+    #: The grammatical class of this words terminator, if any.
     terminator = None
+
+    #: A list of grammatical classes this word terminates, for terminators.
     terminates = None
+
+    #: A list of two-tuples such as ``('<chapter>.<section>', 'http://...')``.
     cll = None
+
+    #: HTML for the entry definition, such as a place structure.
     definition = None
+
+    #: HTML for notes about the entry.
     notes = None
+
+    #: Plain text definition.
     textdefinition = None
+
+    #: Plain text notes.
     textnotes = None
+
+    #: The :class:`~vlasisku.database.Root` instance this entry is in.
     db = None
 
     # We need new lists for every instance.
@@ -82,22 +80,16 @@ class Entry(object):
 
 
 class Gloss(object):
-    """Container for jbovlaste gloss data.
+    """Container for jbovlaste gloss data."""
 
-    Attributes:
-
-    gloss
-        The actual gloss word.
-    entry
-        The :class:`Entry` this glosses to.
-    sense
-        The sense in which this gloss word relates to the entry, or ``None``.
-    place
-        The specific place of the entry this glosses to, if any.
-
-    """
-
+    #: The actual gloss word.
     gloss = None
+
+    #: The :class:`Entry` this glosses to.
     entry = None
+
+    #: The sense in which this gloss word relates to the entry, or ``None``.
     sense = None
+
+    #: The specific place of the entry this glosses to, if any.
     place = None

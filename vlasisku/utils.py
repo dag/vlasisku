@@ -12,8 +12,6 @@ import os
 import signal
 
 from pqs import Parser
-import yaml
-from stemming.porter2 import stem
 from flask import current_app, request
 import jellyfish
 
@@ -58,11 +56,6 @@ def unique(iterable):
             yield item
 
 
-def load_yaml(filename):
-    with open(filename) as f:
-        return yaml.load(f)
-
-
 def compound2affixes(compound):
     """Split a compound word into affixes and glue."""
     c = r'[bcdfgjklmnprstvxz]'
@@ -91,68 +84,6 @@ def compound2affixes(compound):
     return []
 
 
-def tex2html(tex):
-    """Turn most of the TeX used in jbovlaste into HTML.
-
-    >>> tex2html('$x_1$ is $10^2*2$ examples of $x_{2}$.')
-    u'x<sub>1</sub> is 10<sup>2\\xd72</sup> examples of x<sub>2</sub>.'
-    >>> tex2html('\emph{This} is emphasised and \\\\textbf{this} is boldfaced.')
-    u'<em>This</em> is emphasised and <strong>this</strong> is boldfaced.'
-    """
-    def math(m):
-        t = []
-        for x in m.group(1).split('='):
-            x = x.replace('{', '').replace('}', '')
-            x = x.replace('*', u'×')
-            if '_' in x:
-                t.append(u'%s<sub>%s</sub>' % tuple(x.split('_')[0:2]))
-            elif '^' in x:
-                t.append(u'%s<sup>%s</sup>' % tuple(x.split('^')[0:2]))
-            else:
-                t.append(x)
-        return '='.join(t)
-    def typography(m):
-        if m.group(1) == 'emph':
-            return u'<em>%s</em>' % m.group(2)
-        elif m.group(1) == 'textbf':
-            return u'<strong>%s</strong>' % m.group(2)
-    def lines(m):
-        format = '\n%s'
-        if m.group(1).startswith('|'):
-            format = '\n<span style="font-family: monospace">    %s</span>'
-        elif m.group(1).startswith('>'):
-            format = '\n<span style="font-family: monospace">   %s</span>'
-        return format % m.group(1)
-    def puho(m):
-        format = 'inchoative\n<span style="font-family: monospace">%s</span>'
-        return format % m.group(1)
-    tex = re.sub(r'\$(.+?)\$', math, tex)
-    tex = re.sub(r'\\(emph|textbf)\{(.+?)\}', typography, tex)
-    tex = re.sub(r'(?![|>\-])\s\s+(.+)', lines, tex)
-    tex = re.sub(r'inchoative\s\s+(----.+)', puho, tex)
-    return tex
-
-def braces2links(text, entries):
-    """Turns {quoted words} into HTML links."""
-    def f(m):
-        try:
-            values = (m.group(1), entries[m.group(1)].definition, m.group(1))
-            return u'<a href="%s" title="%s">%s</a>' % values
-        except KeyError:
-            link = u'<a href="http://jbovlaste.lojban.org' \
-                    '/dict/addvalsi.html?valsi=%s" ' \
-                    'title="This word is missing, please add it!" ' \
-                    'class="missing">%s</a>'
-            return link % (m.group(1), m.group(1))
-    return re.sub(r'\{(.+?)\}', f, text)
-
-
-def add_stems(token, collection, item):
-    stemmed = stem(token.lower())
-    if stemmed not in collection:
-        collection[stemmed] = []
-    if item not in collection[stemmed]:
-        collection[stemmed].append(item)
 
 
 def etag(f):
@@ -201,15 +132,6 @@ def dameraulevenshtein(seq1, seq2):
     """
     return jellyfish.damerau_levenshtein_distance(seq1.encode('utf-8'),
                                                   seq2.encode('utf-8'))
-
-
-def strip_html(text):
-    """Strip HTML from a string.
-
-    >>> strip_html('x<sub>1</sub> is a variable.')
-    'x1 is a variable.'
-    """
-    return re.sub(r'<.*?>', '', text.replace('\n', '; '))
 
 
 def jbofihe(text):

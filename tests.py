@@ -5,8 +5,8 @@ from nose.tools import istest as test, \
                        assert_not_equal as differ
 
 from vlasisku import app, db
-from vlasisku.utils import compound2affixes, tex2html, braces2links, \
-                           parse_query
+from vlasisku.utils import compound2affixes, parse_query
+from vlasisku.database import tex2html, braces2links
 
 
 app.debug = False
@@ -79,4 +79,3 @@ def parse_query_splits_queries():
     """The parse_query util links fields to lists of tokens"""
     same(parse_query('class:BAI event affix:bau'),
          {'class': ['BAI'], 'all': ['event'], 'affix': ['bau']})
-
