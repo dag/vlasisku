@@ -1,4 +1,4 @@
-flask-genshi>=0.2
+flask-genshi>=0.4
 flask-script
 ordereddict
 pyyaml

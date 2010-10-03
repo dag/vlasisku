@@ -1,16 +1,16 @@
 
-from flask import send_file
+from flask import Module, send_file
 from flaskext.genshi import render_response
 
-from vlasisku import app
+
+general = Module(__name__)
 
 
-@app.route('/favicon.ico')
+@general.route('/favicon.ico')
 def favicon():
     return send_file('static/favicon.ico')
 
 
-@app.route('/custom.js')
+@general.route('/custom.js')
 def javascript():
     return render_response('custom.js')
-

@@ -1,15 +1,19 @@
 
-from flask import request, redirect, url_for
+from flask import Module, request, redirect, url_for
 from flaskext.genshi import render_response
 
-from vlasisku import app, db
+from vlasisku.extensions import database
 from vlasisku.utils import etag, compound2affixes, dameraulevenshtein
 from vlasisku.database import TYPES
+
+
+app = Module(__name__)
 
 
 @app.route('/')
 @etag
 def index():
+    db = database.root
     if 'query' in request.args:
         return redirect(request.args.get('query'))
     types = TYPES
@@ -22,6 +26,7 @@ def index():
 @app.route('/<query>')
 @etag
 def query(query):
+    db = database.root
     query = query.replace('+', ' ')
     results = db.query(query)
 
@@ -54,4 +59,4 @@ def query(query):
 
 @app.route('/_complete/')
 def complete():
-    return '\n'.join(db.suggest(request.args.get('q', ''))[1])
+    return '\n'.join(database.root.suggest(request.args.get('q', ''))[1])

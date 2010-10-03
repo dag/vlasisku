@@ -4,7 +4,7 @@ from nose.tools import istest as test, \
                        assert_equal as same, \
                        assert_not_equal as differ
 
-from vlasisku import app, db
+from vlasisku import app, database
 from vlasisku.utils import compound2affixes, parse_query
 from vlasisku.database import tex2html, braces2links
 
@@ -62,13 +62,13 @@ def tex2html_does_typography():
 @test
 def braces2links_does_known_words():
     """The braces2links util handles known words"""
-    same(braces2links('{coi}', db.entries),
+    same(braces2links('{coi}', database.root.entries),
          '<a href="coi" title="vocative: greetings/hello.">coi</a>')
 
 @test
 def braces2links_does_unknown_words():
     """The braces2links util links jbovlaste for unknown words"""
-    same(braces2links('{unknown}', db.entries),
+    same(braces2links('{unknown}', database.root.entries),
          '<a href='
          '"http://jbovlaste.lojban.org/dict/addvalsi.html?valsi=unknown" '
          'title="This word is missing, please add it!" class="missing">'

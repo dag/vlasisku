@@ -7,19 +7,19 @@
       <title py:with="title=list(select('title/text()'))">
         <py:if test="title">$title - </py:if>vlasisku
       </title>
-      <link rel="shortcut icon" href="${url_for('static', filename='favicon-16.png')}"/>
-      <link rel="stylesheet" href="${url_for('static', filename='blueprint/screen.css')}" type="text/css" media="screen, projection"/>
-      <link rel="stylesheet" href="${url_for('static', filename='blueprint/print.css')}" type="text/css" media="print"/>
-      <![CDATA[<!--[if lt IE 8]><link rel="stylesheet" href="${url_for('static', filename='blueprint/ie.css')}" type="text/css" media="screen, projection"><![endif]-->]]>
+      <link rel="shortcut icon" href="${url_for('.static', filename='favicon-16.png')}"/>
+      <link rel="stylesheet" href="${url_for('.static', filename='blueprint/screen.css')}" type="text/css" media="screen, projection"/>
+      <link rel="stylesheet" href="${url_for('.static', filename='blueprint/print.css')}" type="text/css" media="print"/>
+      <![CDATA[<!--[if lt IE 8]><link rel="stylesheet" href="${url_for('.static', filename='blueprint/ie.css')}" type="text/css" media="screen, projection"><![endif]-->]]>
       <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/grids/grids-min.css"/>
-      <link rel="stylesheet" href="${url_for('static', filename='tipTip.css')}" type="text/css" media="screen, projection, print"/>
-      <link rel="stylesheet" href="${url_for('static', filename='jquery.autocomplete.css')}" type="text/css" media="screen, projection, print"/>
-      <link rel="stylesheet" href="${url_for('static', filename='custom.css')}" type="text/css" media="screen, projection, print"/>
-      <link rel="search" type="application/opensearchdescription+xml" href="${url_for('opensearch')}" title="Lojban dictionary"/>
+      <link rel="stylesheet" href="${url_for('.static', filename='tipTip.css')}" type="text/css" media="screen, projection, print"/>
+      <link rel="stylesheet" href="${url_for('.static', filename='jquery.autocomplete.css')}" type="text/css" media="screen, projection, print"/>
+      <link rel="stylesheet" href="${url_for('.static', filename='custom.css')}" type="text/css" media="screen, projection, print"/>
+      <link rel="search" type="application/opensearchdescription+xml" href="${url_for('opensearch.opensearch')}" title="Lojban dictionary"/>
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"/>
-      <script type="text/javascript" src="${url_for('static', filename='jquery.tipTip.minified.js')}"/>
-      <script type="text/javascript" src="${url_for('static', filename='jquery.autocomplete.pack.js')}"/>
-      <script type="text/javascript" src="${url_for('javascript')}"/>
+      <script type="text/javascript" src="${url_for('.static', filename='jquery.tipTip.minified.js')}"/>
+      <script type="text/javascript" src="${url_for('.static', filename='jquery.autocomplete.pack.js')}"/>
+      <script type="text/javascript" src="${url_for('general.javascript')}"/>
     </head>
   </py:match>
 
@@ -29,9 +29,9 @@
         <div id="hd">
           <div id="nav">
             <ol>
-              <li><a href="${url_for('index')}" rel="index" accesskey="h">Home</a></li>
+              <li><a href="${url_for('app.index')}" rel="index" accesskey="h">Home</a></li>
               <li><a href="https://bugs.launchpad.net/vlasisku/+filebug" title="Found a bug? Report it!" accesskey="b">Bugs</a></li>
-              <li><a href="${url_for('help')}" accesskey="?">Help</a></li>
+              <li><a href="${url_for('pages.help')}" accesskey="?">Help</a></li>
             </ol>
           </div>
 
@@ -39,7 +39,7 @@
             <form action="/" method="get" onsubmit="return search();" id="search">
               <p>
                 <input type="text" value="${value_of('query', '')}" size="30" id="query" name="query" accesskey="f" onfocus="this.select()"/>
-                <button type="submit"><img src="${url_for('static', filename='favicon-16.png')}" alt=""/> Find!</button>
+                <button type="submit"><img src="${url_for('.static', filename='favicon-16.png')}" alt=""/> Find!</button>
               </p>
             </form>
           </div>

@@ -14,7 +14,7 @@
       Prefix a query with the name of a field followed by a colon and that query will be limited to that field.
       This restricts the results of the rest of the query to entries that match that field-specific query.
     </p>
-    <p>Example: <code><a href="${url_for('query', query='number type:cmavo')}">number type:cmavo</a></code>.</p>
+    <p>Example: <code><a href="${url_for('app.query', query='number type:cmavo')}">number type:cmavo</a></code>.</p>
     <p>
       The above gives you a list of all particles matching “number”.
       The fields you can search are: <em>word</em>, <em>gloss</em>,
@@ -26,13 +26,13 @@
       A <code>*</code> matches anything at that position, a <code>?</code> matches any single character.
       Also, <code>[abc]</code> matches any of “a”, “b” and “c” whereas <code>[!abc]</code> matches anything except those.
     </p>
-    <p>Example: <code><a href="/${url_for('query', query='word:[bd]a?')}">word:[bd]a?</a></code>.</p>
+    <p>Example: <code><a href="/${url_for('app.query', query='word:[bd]a?')}">word:[bd]a?</a></code>.</p>
     <p>This lists all words that begin with a “b” or a “d”, followed by an “a” and any other one character.</p>
     <h2>Other things to keep in mind</h2>
     <p>For text fields I compare the stem of words, so that “amused” finds “amusing” and “amusement”.</p>
-    <p>Example: <code><a href="${url_for('query', query='amused')}">amused</a></code>.</p>
+    <p>Example: <code><a href="${url_for('app.query', query='amused')}">amused</a></code>.</p>
     <p>If you need a space in a query and don't mean two separate restrictions, you need to quote the query.</p>
-    <p>Example: <code><a href="/${url_for('query', query='type:&quot;experimental gismu&quot;')}">type:"experimental gismu"</a></code>.</p>
+    <p>Example: <code><a href="/${url_for('app.query', query='type:&quot;experimental gismu&quot;')}">type:"experimental gismu"</a></code>.</p>
     <p>
       I have an <a href="http://www.opensearch.org/">OpenSearch</a> description, which means you can add me as a search engine in Firefox.
       If you're using Chrome or Chromium I'm already set up for you, just type <code>vlasisku.lojban.org</code> followed by your search in the location bar.
