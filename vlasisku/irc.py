@@ -98,6 +98,7 @@ class WordBot(BotBase):
             elif case('url'):
                 data = url
             elif case('components'):
+                entry = query
                 data = ' '.join(e.word for a in compound2affixes(query)
                                 if len(a) != 1
                                 for e in database.root.entries.itervalues()
