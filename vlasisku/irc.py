@@ -81,7 +81,7 @@ class WordBot(BotBase):
         if not entry and len(results['matches']) == 1:
             entry = results['matches'].pop()
 
-        if entry:
+        if entry or field == 'definition':
             case = lambda x: field == x
             if case('definition'):
                 data = entry.textdefinition.encode('utf-8')
