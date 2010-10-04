@@ -5,6 +5,7 @@ import re
 from twisted.internet.protocol import ReconnectingClientFactory
 from twisted.python import log
 from twisted.words.protocols.irc import IRCClient
+from werkzeug import url_quote_plus
 
 from vlasisku import database
 from vlasisku.utils import jbofihe
@@ -73,7 +74,7 @@ class WordBot(BotBase):
             field = match.group('field')
             query = re.sub(r'\s\(.+?\)$', '', query)
 
-        url = 'http://vlasisku.lojban.org/%s' % query.replace(' ', '+')
+        url = 'http://vlasisku.lojban.org/%s' % url_quote_plus(query)
         results = database.root.query(query)
 
         entry = results['entry']
