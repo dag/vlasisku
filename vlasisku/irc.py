@@ -98,10 +98,10 @@ class WordBot(BotBase):
             elif case('url'):
                 data = url
             elif case('components'):
-                data = ' '.join(e for a in compound2affixes(query)
-                                  if len(a) != 1
-                                  for e in database.root.entries.itervalues()
-                                  if a in e.searchaffixes)
+                data = ' '.join(e.word for a in compound2affixes(query)
+                                if len(a) != 1
+                                for e in database.root.entries.itervalues()
+                                if a in e.searchaffixes)
 
             data = data or '(none)'
             if field == 'definition':
