@@ -7,6 +7,7 @@ from os.path import join, getmtime
 import cPickle as pickle
 import xml.etree.cElementTree as ElementTree
 import re
+from functools import wraps
 
 from Stemmer import Stemmer
 from ordereddict import OrderedDict
@@ -106,6 +107,13 @@ def strip_html(text):
     'x1 is a variable.'
     """
     return re.sub(r'<.*?>', '', text.replace('\n', '; '))
+
+
+def selector(func):
+    @wraps(func)
+    def wrapper(self, queries, exclude=()):
+        return list(unique(func(self, queries, exclude)))
+    return wrapper
 
 
 class Database(object):
@@ -306,50 +314,57 @@ class Root(object):
                 types.append('class')
         return [prefix, suggestions, types]
 
-    def matches_word(self, queries):
-        return list(unique(e for q in queries
-                             for e in self.entries.itervalues()
-                             if fnmatch(e.word, q)))
+    @selector
+    def matches_word(self, queries, exclude):
+        return (e for q in queries
+                  for e in self.entries.itervalues()
+                  if fnmatch(e.word, q))
 
-    def matches_gloss(self, queries, exclude=set()):
-        return list(unique(g for q in queries
-                             for g in self.gloss_stems.get(stem(q.lower()), [])
-                             if all(g in self.gloss_stems.get(
-                                stem(q.lower()), []) for q in queries)
-                             if g.entry not in exclude))
+    @selector
+    def matches_gloss(self, queries, exclude):
+        queries = (stem(q.lower()) for q in queries)
+        return (g for q in queries
+                  for g in self.gloss_stems.get(q, [])
+                  if all(g in self.gloss_stems.get(q, []) for q in queries)
+                  if g.entry not in exclude)
 
-    def matches_affix(self, queries, exclude=set()):
-        return list(unique(e for e in self.entries.itervalues()
-                             if e not in exclude
-                             for q in queries
-                             if any(fnmatch(a, q) for a in e.searchaffixes)))
+    @selector
+    def matches_affix(self, queries, exclude):
+        return (e for e in self.entries.itervalues()
+                  if e not in exclude
+                  for q in queries
+                  if any(fnmatch(a, q) for a in e.searchaffixes))
 
-    def matches_class(self, queries, exclude=set()):
-        return list(unique(e for q in queries
-                             for e in self.entries.itervalues()
-                             if e not in exclude
-                             if q == e.grammarclass))
+    @selector
+    def matches_class(self, queries, exclude):
+        return (e for q in queries
+                  for e in self.entries.itervalues()
+                  if e not in exclude
+                  if q == e.grammarclass)
 
-    def matches_type(self, queries, exclude=set()):
-        return list(unique(e for q in queries
-                             for e in self.entries.itervalues()
-                             if e not in exclude
-                             if fnmatch(e.type, q)))
+    @selector
+    def matches_type(self, queries, exclude):
+        return (e for q in queries
+                  for e in self.entries.itervalues()
+                  if e not in exclude
+                  if fnmatch(e.type, q))
 
-    def matches_definition(self, queries, exclude=set()):
-        return list(unique(e for q in queries
-                             for e in self.definition_stems.get(
-                                stem(q.lower()), [])
-                             if all(e in self.definition_stems.get(
-                                stem(q.lower()), []) for q in queries)
-                             if e not in exclude))
+    @selector
+    def matches_definition(self, queries, exclude):
+        queries = (stem(q.lower()) for q in queries)
+        return (e for q in queries
+                  for e in self.definition_stems.get(q, [])
+                  if all(e in self.definition_stems.get(q, [])
+                         for q in queries)
+                  if e not in exclude)
 
-    def matches_notes(self, queries, exclude=set()):
-        return list(unique(e for q in queries
-                             for e in self.note_stems.get(stem(q.lower()), [])
-                             if all(e in self.note_stems.get(
-                                stem(q.lower()), []) for q in queries)
-                             if e not in exclude))
+    @selector
+    def matches_notes(self, queries, exclude):
+        queries = (stem(q.lower()) for q in queries)
+        return (e for q in queries
+                  for e in self.note_stems.get(q, [])
+                  if all(e in self.note_stems.get(q, []) for q in queries)
+                  if e not in exclude)
 
     def _load_entries(self, xml):
         processors = {'rafsi': self._process_rafsi,
