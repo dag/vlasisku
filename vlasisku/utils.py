@@ -8,6 +8,7 @@ from functools import wraps
 from contextlib import contextmanager
 from subprocess import Popen, PIPE
 from threading import Thread
+from Queue import Queue
 import os
 import signal
 
@@ -156,11 +157,14 @@ def jbofihe(text):
       ...
     ValueError: parser timeout
     """
-    data = []
+    data = Queue(1)
     process = Popen(('jbofihe', '-ie', '-cr'),
                     stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
-    thread = Thread(target=lambda: data.extend(process.communicate(text)))
+    def target(queue):
+        queue.put(process.communicate(text))
+
+    thread = Thread(target=target, args=(data,))
     thread.start()
     thread.join(1)
 
@@ -168,7 +172,7 @@ def jbofihe(text):
         os.kill(process.pid, signal.SIGTERM)
         raise ValueError('parser timeout')
 
-    output, error = data
+    output, error = data.get()
     grammatical = not process.returncode # 0=grammatical, 1=ungrammatical
 
     if grammatical:
@@ -179,7 +183,7 @@ def jbofihe(text):
                      r"at line \d+ column (?P<column>\d+)", error)
     if match:
         reg = r'^(%s)(%s)(.*)' % ('.' * (int(match.group('column')) - 1),
-                                   match.group('word'))
+                                  re.escape(match.group('word')))
         text = re.sub(reg, r'\1_\2_ ⚠ \3', text).rstrip()
         raise ValueError('not grammatical: %s' % text)
 
