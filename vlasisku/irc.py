@@ -8,7 +8,7 @@ from twisted.words.protocols.irc import IRCClient
 from werkzeug import url_quote_plus
 
 from vlasisku import database
-from vlasisku.utils import jbofihe
+from vlasisku.utils import jbofihe, compound2affixes
 
 
 class BotBase(IRCClient):
@@ -61,7 +61,7 @@ class WordBot(BotBase):
     nickname = 'valsi'
 
     def query(self, target, query):
-        fields = 'affix|class|type|notes|cll|url'
+        fields = 'affix|class|type|notes|cll|url|components'
 
         if query == 'help!':
             self.msg(target, '<query http://tiny.cc/query-format > '
@@ -97,6 +97,11 @@ class WordBot(BotBase):
                 data = '  '.join(link for (chap, link) in entry.cll)
             elif case('url'):
                 data = url
+            elif case('components'):
+                data = ' '.join(e for a in compound2affixes(query)
+                                  if len(a) != 1
+                                  for e in database.root.entries.itervalues()
+                                  if a in e.searchaffixes)
 
             data = data or '(none)'
             if field == 'definition':
