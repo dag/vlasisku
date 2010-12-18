@@ -114,10 +114,20 @@ class WordBot(BotBase):
 
         elif results['matches']:
             format = '%d result%s: %s'
+            matches = (results['words']
+                      +results['glosses']
+                      +results['affix']
+                      +results['classes']
+                      +results['types']
+                      +results['definitions']
+                      +results['notes'])
+            data = ', '.join(map(str, matches[:10]))
+            if len(results['matches']) > 10:
+                data += '…'
             self.msg(target, format % (len(results['matches']),
                                        's' if len(results['matches']) != 1
                                            else '',
-                                       url))
+                                       data))
         else:
             self.msg(target, 'no results. %s' % url)
 
