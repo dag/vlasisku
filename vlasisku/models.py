@@ -93,3 +93,6 @@ class Gloss(object):
 
     #: The specific place of the entry this glosses to, if any.
     place = None
+
+    def __str__(self):
+        return self.entry.word
