@@ -143,7 +143,7 @@ class GrammarBot(BotBase):
         try:
             response = jbofihe(query)
         except ValueError, e:
-            response = e
+            response = str(e)
 
         self.msg(target, response)
 
