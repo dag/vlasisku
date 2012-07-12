@@ -3,7 +3,7 @@
 from __future__ import with_statement
 
 from fnmatch import fnmatch
-from os.path import join, getmtime
+from os.path import isfile, join, getmtime
 import cPickle as pickle
 import xml.etree.cElementTree as ElementTree
 import re
@@ -125,19 +125,46 @@ class Database(object):
         if app is not None:
             self.init_app(app)
 
+    @property
+    def etag(self):
+        return self.root.etag if self.root else None
+
     def init_app(self, app):
         self.app = app
         root_path = app.root_path
-        cache = app.config.get('VLASISKU_CACHE', 'data/db.pickle')
-        try:
-            with open(join(root_path, cache)) as f:
-                root = pickle.load(f)
-            root.etag = str(getmtime(join(root_path, cache)))
-        except IOError:
-            root = Root(self)
-            with open(join(root_path, cache), 'w') as f:
-                pickle.dump(root, f, pickle.HIGHEST_PROTOCOL)
+        cache_path = join(root_path, app.config.get('VLASISKU_CACHE', 'data/db.pickle'))
+        root = self._load_from_cache(cache_path)
+        if not root:
+            root = self._load_from_source(cache_path)
         self.root = root
+
+        if not self.root:
+            error_message = 'No database cache or source found. Run ./manage.py updatedb'
+            def abort_middleware(environ, start_response):
+                from flask import abort
+                self.app.logger.error(error_message)
+                abort(503)
+            self.app.wsgi_app = abort_middleware
+            # Use print because app.logger squashes logs if not app.debug
+            print error_message
+
+    def _load_from_cache(self, cache_path):
+        try:
+            with open(cache_path) as f:
+                root = pickle.load(f)
+            root.etag = str(getmtime(cache_path))
+            return root
+        except IOError:
+            pass
+
+    def _load_from_source(self, cache_path):
+        try:
+            root = Root(self)
+            with open(cache_path, 'w') as f:
+                pickle.dump(root, f, pickle.HIGHEST_PROTOCOL)
+            return root
+        except IOError:
+            pass
 
 
 class Root(object):
