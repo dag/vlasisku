@@ -9,7 +9,7 @@ app = Flask(__name__)
 genshi.init_app(app)
 database.init_app(app)
 
-ETAG = database.root.etag
+ETAG = database.etag
 
 app.config.from_object(__name__)
 

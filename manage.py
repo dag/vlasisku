@@ -66,7 +66,7 @@ def updatedb():
         with open('vlasisku/data/jbovlaste.xml', 'w') as file:
             xml.write(file, 'utf-8')
         os.system('''
-            rm vlasisku/data/db.pickle
+            rm -f vlasisku/data/db.pickle
             touch app.wsgi
             ''')
 
