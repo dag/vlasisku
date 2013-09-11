@@ -439,7 +439,7 @@ class Root(object):
         if text in self.cll:
             for path in self.cll[text]:
                 section = '%s.%s' % tuple(path)
-                link = 'http://dag.github.com/cll/%s/%s/'
+                link = 'http://dag.github.io/cll/%s/%s/'
                 entry.cll.append((section, link % tuple(path)))
 
     def _process_definition(self, entry, text):
